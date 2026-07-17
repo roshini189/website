@@ -69,7 +69,7 @@ function App() {
       "Responsive Design", "Lucide Icons", "GitHub Pages",
       "Component Reusability", "State Management"
     ],
-    github: "https://github.com/roshini189/Portfolio",
+    github: "https://github.com/roshini189/website",
     category: "Full Stack Development",
     image: "public/images/port.jpeg"
   },{
