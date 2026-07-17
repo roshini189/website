@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Github, 
   Linkedin, 
@@ -9,9 +9,6 @@ import {
   Database, 
   Brain,
   Award,
-  User,
-  Briefcase,
-  Phone,
   MapPin,
   Calendar,
   Star,
@@ -21,7 +18,6 @@ import {
   Cpu,
   Cloud,
   GitBranch,
-  Wrench,
   AppWindow,
   BugPlay,
   Terminal,
@@ -29,11 +25,24 @@ import {
   FileText,
 } from 'lucide-react';
 
+interface Project {
+  id: number;
+  title: string;
+  description: string;
+  longDescription: string;
+  technologies: string[];
+  github: string;
+  category: string;
+  image: string;
+  Demo?: string;
+}
+
 function App() {
+  const baseUrl = import.meta.env.BASE_URL;
   const [activeSection, setActiveSection] = useState('home');
   const [isScrolled, setIsScrolled] = useState(false);
-  const [selectedProject, setSelectedProject] = useState(null);
- const [activeProjectCategory, setActiveProjectCategory] = useState('All');
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [activeProjectCategory, setActiveProjectCategory] = useState('All');
   const [activeSkillCategory, setActiveSkillCategory] = useState('All');
 
   useEffect(() => {
@@ -57,7 +66,7 @@ function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const projects = [
+  const projects: Project[] = [
      {
   
     id: 1,
@@ -71,7 +80,7 @@ function App() {
     ],
     github: "https://github.com/roshini189/website",
     category: "Full Stack Development",
-    image: "public/images/port.jpeg"
+    image: `${baseUrl}images/port.jpeg`
   },{
       id: 2,
       title: "AlResearchEase- AI Research Chatbot",
@@ -80,7 +89,7 @@ function App() {
       technologies: ["Streamlit","Ollama API","Python","NLP","DeepLearning","RAG","LLM","FAISS", "Docker"],
       github: "https://github.com/roshini189/AI_Research_Ease",
       category: "Deeplearning",
-      image: "public/images/Ai.jpeg" },
+      image: `${baseUrl}images/Ai.jpeg` },
     {
       id: 3,
       title: "ViceDetect - ML Prediction System",
@@ -89,7 +98,7 @@ function App() {
       technologies: ["R", "XGBoost", "K-means", "Machine Learning", "Data Visualization", "Statistical Analysis"],
       github: "https://github.com/roshini189/ViceDetect",
       category: "Machine Learning",
-      image: "public/images/vice.jpeg" ,
+      image: `${baseUrl}images/vice.jpeg` ,
      },
    
     {
@@ -101,7 +110,7 @@ function App() {
       github: "https://github.com/roshini189/Safeclick",
       Demo:"",
       category: "DataMining",
-      image: "public/images/images.jpeg"  },
+      image: `${baseUrl}images/images.jpeg`  },
     {
       id: 5,
       title: "Agricitease",
@@ -110,7 +119,7 @@ function App() {
       technologies: ["Java", "Angular", "Javascript", "MySQL", "Springboot", "RestAPI"],
       github: "https://github.com/roshini189/Agricitease",
       category: "Full Stack Development",
-      image: "public/images/Agricitease.jpeg" },
+      image: `${baseUrl}images/Agricitease.jpeg` },
     {
       id: 6,
       title: "Customer Revenue Predictor - ML Prediction",
@@ -119,7 +128,7 @@ function App() {
       technologies: ["R","Mice","RStudio","Caret","Regression"],
       github: "https://github.com/roshini189/Customer-Revenue-Predictor",
       category: "MachineLearning",
-      image: "public/images/crp.jpeg" },
+      image: `${baseUrl}images/crp.jpeg` },
    
   ];
 
@@ -255,7 +264,7 @@ const filteredProjects = activeProjectCategory === "All"
    ] },
   ];
 
-  const scrollToSection = (sectionId) => {
+  const scrollToSection = (sectionId: string) => {
     document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
   };
 
@@ -298,7 +307,7 @@ const filteredProjects = activeProjectCategory === "All"
           <div className="mb-8">
             <div className="w-32 h-32 mx-auto mb-6 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 p-1">
               <img
-  src="public\images\bio.jpeg"
+  src={`${baseUrl}images/bio.jpeg`}
   alt="Roshini Talluru"
   className="w-full h-full rounded-full object-cover"
 />
@@ -326,7 +335,7 @@ const filteredProjects = activeProjectCategory === "All"
 
 {/* Resume Link */}
 <a
-  href="public/images/Roshini_Talluru_Resume.pdf"
+  href="/images/Roshini_Talluru_Resume.pdf"
   target="_blank"
   rel="noopener noreferrer"
   className="text-white hover:text-purple-300 transition-colors"
@@ -398,7 +407,7 @@ const filteredProjects = activeProjectCategory === "All"
                   <div className="flex items-center space-x-3">
   <FileText className="w-5 h-5 text-purple-400" />
   <a
-    href="src/Roshini_talluru_Resume.pdf"
+    href={`${baseUrl}images/Roshini_Talluru_Resume.pdf`}
     target="_blank"
     rel="noopener noreferrer"
     className="text-purple-300 hover:underline"
