@@ -5,9 +5,9 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: light;
+  color-scheme: dark;
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: #f8f5ef;
+  background: #08110f;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -20,15 +20,12 @@ html {
 body {
   margin: 0;
   min-width: 320px;
-  background:
-    radial-gradient(circle at 15% 10%, rgba(244, 197, 66, 0.18), transparent 28rem),
-    radial-gradient(circle at 85% 5%, rgba(19, 143, 138, 0.16), transparent 26rem),
-    #f8f5ef;
+  background: #08110f;
 }
 
 body::selection {
   background: #f4c542;
-  color: #161616;
+  color: #08110f;
 }
 
 button,
@@ -46,6 +43,10 @@ img {
   display: block;
 }
 
+canvas {
+  pointer-events: none;
+}
+
 @layer components {
   .section-shell {
     @apply px-4 py-20 sm:px-6 lg:px-8;
@@ -56,55 +57,38 @@ img {
   }
 }
 
-.pattern-grid {
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
-  background-size: 44px 44px;
-  mask-image: linear-gradient(to bottom, #000 0%, transparent 85%);
-}
-
-.ambient-sweep {
-  background:
-    linear-gradient(115deg, transparent 0%, rgba(244, 197, 66, 0.08) 34%, transparent 55%),
-    linear-gradient(65deg, transparent 0%, rgba(15, 118, 110, 0.1) 45%, transparent 72%);
-  background-size: 180% 180%;
-  animation: ambient-sweep 11s ease-in-out infinite alternate;
-}
-
-.interactive-panel {
+.site-shell {
   position: relative;
-  overflow: hidden;
-  isolation: isolate;
-  transition:
-    border-color 220ms ease,
-    box-shadow 220ms ease,
-    transform 220ms ease,
-    background-color 220ms ease;
+  overflow-x: hidden;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(145deg, #08110f 0%, #0d1714 38%, #11100c 100%);
+  background-size: 54px 54px, 54px 54px, auto;
 }
 
-.interactive-panel::after {
+.site-shell::before {
   content: '';
-  position: absolute;
+  position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background: linear-gradient(120deg, transparent 20%, rgba(255, 255, 255, 0.2) 45%, transparent 70%);
-  opacity: 0;
-  transform: translateX(-45%);
-  transition:
-    opacity 300ms ease,
-    transform 700ms ease;
+  background:
+    linear-gradient(115deg, transparent 0%, rgba(244, 197, 66, 0.09) 32%, transparent 54%),
+    linear-gradient(68deg, transparent 0%, rgba(36, 184, 173, 0.1) 45%, transparent 72%);
+  background-size: 180% 180%;
+  animation: light-scan 12s ease-in-out infinite alternate;
 }
 
-.interactive-panel > * {
+.site-shell > * {
   position: relative;
-  z-index: 1;
 }
 
-.interactive-panel:hover::after {
-  opacity: 1;
-  transform: translateX(45%);
+.glass-panel {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.075);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(20px);
 }
 
 .interactive-button {
@@ -112,32 +96,88 @@ img {
   transition:
     transform 180ms ease,
     box-shadow 180ms ease,
+    border-color 180ms ease,
     background-color 180ms ease,
     color 180ms ease;
 }
 
 .interactive-button:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 18px 38px rgba(0, 0, 0, 0.18);
 }
 
-.hero-portrait img {
+.proof-card,
+.timeline-item,
+.project-switch {
+  position: relative;
+  overflow: hidden;
+}
+
+.proof-card::after,
+.timeline-item::after,
+.project-switch::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(115deg, transparent 22%, rgba(255, 255, 255, 0.28) 48%, transparent 72%);
+  opacity: 0;
+  transform: translateX(-55%);
   transition:
-    transform 650ms ease,
-    filter 650ms ease;
+    opacity 260ms ease,
+    transform 760ms ease;
 }
 
-.hero-portrait:hover img {
-  filter: saturate(1.06) contrast(1.03);
-  transform: scale(1.025);
+.proof-card:hover::after,
+.timeline-item:hover::after,
+.project-switch:hover::after {
+  opacity: 1;
+  transform: translateX(55%);
 }
 
-@keyframes ambient-sweep {
+.skill-orbit::before {
+  content: '';
+  position: absolute;
+  inset: 18px;
+  border-radius: 999px;
+  background: conic-gradient(from 0deg, rgba(244, 197, 66, 0), rgba(244, 197, 66, 0.72), rgba(36, 184, 173, 0), rgba(255, 107, 74, 0.58), rgba(244, 197, 66, 0));
+  filter: blur(18px);
+  opacity: 0.44;
+  animation: orbit-spin 11s linear infinite;
+}
+
+.skill-orbit::after {
+  content: '';
+  position: absolute;
+  inset: 5rem;
+  border-radius: 999px;
+  border: 1px solid rgba(244, 197, 66, 0.24);
+  box-shadow: 0 0 45px rgba(36, 184, 173, 0.14);
+}
+
+@keyframes light-scan {
   from {
-    background-position: 0% 45%;
+    background-position: 0% 40%;
   }
 
   to {
-    background-position: 100% 55%;
+    background-position: 100% 60%;
+  }
+}
+
+@keyframes orbit-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 640px) {
+  .section-shell {
+    @apply py-16;
+  }
+
+  .skill-orbit::after {
+    inset: 4rem;
   }
 }
 
