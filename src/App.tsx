@@ -1,41 +1,73 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import type { LucideIcon } from 'lucide-react';
 import {
-  Github, 
-  Linkedin, 
-  Mail, 
-  ExternalLink, 
-  ChevronDown, 
-  Code, 
-  Database, 
-  Brain,
   Award,
-  MapPin,
-  Calendar,
-  Star,
-  Server,
-  Globe,
   BarChart3,
-  Cpu,
-  Cloud,
-  GitBranch,
-  AppWindow,
-  BugPlay,
-  Terminal,
-  Send,
+  Brain,
+  Briefcase,
+  CalendarDays,
+  ChevronDown,
+  Code2,
+  Database,
+  ExternalLink,
   FileText,
+  Github,
+  GitBranch,
+  Globe2,
+  Linkedin,
+  Mail,
+  MapPin,
+  Menu,
+  Server,
+  ShieldCheck,
+  Sparkles,
+  Star,
+  TerminalSquare,
+  X,
+  Zap,
 } from 'lucide-react';
 
 interface Project {
   id: number;
   title: string;
+  eyebrow: string;
   description: string;
   longDescription: string;
+  impact: string;
+  role: string;
   technologies: string[];
   github: string;
-  category: string;
+  category: 'AI/Data' | 'Full Stack' | 'Platform';
   image: string;
-  Demo?: string;
 }
+
+interface Skill {
+  name: string;
+  level: number;
+  icon: LucideIcon;
+  category: string;
+}
+
+interface Experience {
+  title: string;
+  company: string;
+  period: string;
+  description: string;
+  achievements: string[];
+}
+
+const navItems = ['home', 'about', 'experience', 'projects', 'skills', 'education', 'awards', 'contact'];
+
+const sectionEyebrows: Record<string, string> = {
+  about: 'Profile',
+  experience: 'Career arc',
+  projects: 'Selected work',
+  skills: 'Technical range',
+  education: 'Academic foundation',
+  awards: 'Recognition',
+  contact: 'Next step',
+};
 
 function App() {
   const baseUrl = import.meta.env.BASE_URL;
@@ -44,695 +76,939 @@ function App() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [activeProjectCategory, setActiveProjectCategory] = useState('All');
   const [activeSkillCategory, setActiveSkillCategory] = useState('All');
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const projects = useMemo<Project[]>(() => [
+    {
+      id: 1,
+      title: 'AIResearchEase',
+      eyebrow: 'RAG research assistant',
+      description:
+        'A secure RAG application for uploading research papers and receiving context-aware answers from local LLMs.',
+      longDescription:
+        'AIResearchEase simplifies academic research workflows with Retrieval-Augmented Generation, FAISS semantic search, local LLM inference, and a Streamlit interface designed for fast document exploration.',
+      impact: '35% performance improvement after model and retrieval tuning',
+      role: 'AI application engineering, retrieval design, performance tuning',
+      technologies: ['Streamlit', 'Ollama API', 'Python', 'NLP', 'RAG', 'LLM', 'FAISS', 'Docker'],
+      github: 'https://github.com/roshini189/AI_Research_Ease',
+      category: 'AI/Data',
+      image: `${baseUrl}images/Ai.jpeg`,
+    },
+    {
+      id: 2,
+      title: 'SafeClick',
+      eyebrow: 'Phishing detection',
+      description:
+        'A Django and JavaScript threat-detection app that evaluates suspicious URLs with structural and behavioral signals.',
+      longDescription:
+        'SafeClick classifies URLs as safe or phishing by extracting signals such as URL structure, sensitive terms, dot count, and content patterns, then returning real-time risk insights to the user.',
+      impact: '99.95% model accuracy reported across detection tests',
+      role: 'Model integration, Django backend, interaction design',
+      technologies: ['Python', 'Django', 'JavaScript', 'RFECV', 'Deep Learning', 'Gradient Boosting'],
+      github: 'https://github.com/roshini189/Safeclick',
+      category: 'AI/Data',
+      image: `${baseUrl}images/images.jpeg`,
+    },
+    {
+      id: 3,
+      title: 'Agricitease',
+      eyebrow: 'Secure agriculture marketplace',
+      description:
+        'A direct-to-customer commerce platform with encrypted Java services and Angular workflows for farm transactions.',
+      longDescription:
+        'Agricitease reduces supply-chain friction by connecting farmers and customers directly. The system combines Angular, Spring Boot, MySQL, AES-encrypted transactions, REST APIs, and IBM Watson support flows.',
+      impact: 'Built for transparent pricing, secure transactions, and direct market access',
+      role: 'Full-stack architecture, secure payments, conversational support',
+      technologies: ['Java', 'Angular', 'JavaScript', 'MySQL', 'Spring Boot', 'REST API'],
+      github: 'https://github.com/roshini189/Agricitease',
+      category: 'Full Stack',
+      image: `${baseUrl}images/Agricitease.jpeg`,
+    },
+    {
+      id: 4,
+      title: 'ViceDetect',
+      eyebrow: 'Behavior prediction system',
+      description:
+        'A machine-learning pipeline predicting smoking and drinking habits through clustering and ensemble modeling.',
+      longDescription:
+        'ViceDetect analyzes behavioral patterns with feature engineering, K-means clustering, XGBoost, statistical analysis, visualizations, and confidence-oriented evaluation.',
+      impact: '73.2% prediction accuracy with interpretable model outputs',
+      role: 'Feature engineering, modeling, evaluation, visualization',
+      technologies: ['R', 'XGBoost', 'K-means', 'Machine Learning', 'Data Visualization', 'Statistics'],
+      github: 'https://github.com/roshini189/ViceDetect',
+      category: 'AI/Data',
+      image: `${baseUrl}images/vice.jpeg`,
+    },
+    {
+      id: 5,
+      title: 'Customer Revenue Predictor',
+      eyebrow: 'Regression forecasting',
+      description:
+        'A customer revenue forecasting workflow using regression models, imputation, outlier handling, and validation.',
+      longDescription:
+        'This project forecasts customer revenue for online retail by cleaning messy transactional data, imputing missing values, transforming skewed features, and comparing OLS, PLS, LASSO, and MARS models.',
+      impact: 'MARS selected as the top performer by RMSE after cross-validation',
+      role: 'Data cleaning, regression modeling, feature transformation',
+      technologies: ['R', 'Mice', 'RStudio', 'Caret', 'Regression', 'MARS'],
+      github: 'https://github.com/roshini189/Customer-Revenue-Predictor',
+      category: 'AI/Data',
+      image: `${baseUrl}images/crp.jpeg`,
+    },
+    {
+      id: 6,
+      title: 'Portfolio Website',
+      eyebrow: 'Personal product surface',
+      description:
+        'A responsive React portfolio designed to present engineering experience, project outcomes, and contact paths.',
+      longDescription:
+        'The portfolio brings together professional experience, selected projects, technical skills, awards, education, and resume access with responsive layouts, accessible controls, and GitHub Pages deployment.',
+      impact: 'Rebuilt as a case-study-led site with polished recruiter scanning paths',
+      role: 'React development, UI strategy, responsive implementation',
+      technologies: ['React', 'Tailwind CSS', 'TypeScript', 'Vite', 'Lucide Icons', 'GitHub Pages'],
+      github: 'https://github.com/roshini189/website',
+      category: 'Platform',
+      image: `${baseUrl}images/port.jpeg`,
+    },
+  ], [baseUrl]);
+
+  const skills = useMemo<Skill[]>(() => [
+    { name: 'Python', level: 95, icon: Code2, category: 'Languages' },
+    { name: 'JavaScript / TypeScript', level: 90, icon: Code2, category: 'Languages' },
+    { name: 'Java', level: 88, icon: Code2, category: 'Languages' },
+    { name: 'R', level: 88, icon: Code2, category: 'Languages' },
+    { name: 'Go', level: 80, icon: Code2, category: 'Languages' },
+    { name: 'React / Next.js', level: 92, icon: Globe2, category: 'Frontend' },
+    { name: 'Angular', level: 90, icon: Globe2, category: 'Frontend' },
+    { name: 'HTML / CSS / SCSS', level: 92, icon: Globe2, category: 'Frontend' },
+    { name: 'Node.js / Express', level: 88, icon: Server, category: 'Backend' },
+    { name: 'Spring Boot', level: 90, icon: Server, category: 'Backend' },
+    { name: 'GraphQL', level: 85, icon: Server, category: 'Backend' },
+    { name: 'Kafka', level: 85, icon: Server, category: 'Backend' },
+    { name: 'PostgreSQL / MongoDB', level: 87, icon: Database, category: 'Data' },
+    { name: 'Azure SQL / MySQL', level: 84, icon: Database, category: 'Data' },
+    { name: 'Redis / DynamoDB', level: 78, icon: Database, category: 'Data' },
+    { name: 'Machine Learning', level: 90, icon: Brain, category: 'AI/ML' },
+    { name: 'RAG / LLM Apps', level: 90, icon: Brain, category: 'AI/ML' },
+    { name: 'NLP / Deep Learning', level: 85, icon: Brain, category: 'AI/ML' },
+    { name: 'AWS / Azure', level: 83, icon: Zap, category: 'Cloud' },
+    { name: 'Docker / Kubernetes', level: 80, icon: TerminalSquare, category: 'Cloud' },
+    { name: 'Helm / Terraform', level: 78, icon: TerminalSquare, category: 'Cloud' },
+    { name: 'Prometheus / Grafana', level: 80, icon: BarChart3, category: 'Cloud' },
+    { name: 'Git / CI/CD', level: 90, icon: GitBranch, category: 'Tools' },
+    { name: 'Jira / Bitbucket', level: 85, icon: GitBranch, category: 'Tools' },
+    { name: 'JUnit / Postman', level: 84, icon: ShieldCheck, category: 'Tools' },
+    { name: 'SonarQube', level: 80, icon: ShieldCheck, category: 'Tools' },
+  ], []);
+
+  const experience: Experience[] = [
+    {
+      title: 'Software Engineer',
+      company: 'Cotiviti (Endeavour Technologies Inc)',
+      period: 'Nov 2025 - Present',
+      description:
+        'Designing cloud-native healthcare microservices, event-driven pipelines, and AI-powered engineering tools for enterprise claims platforms.',
+      achievements: [
+        'Architected Java and Spring Boot microservices with GraphQL APIs and Kafka event layers for high-volume claim adjudication workflows.',
+        'Engineered a custom MCP server connecting Jira, production logs, context agents, and skills for spec-based development at enterprise scale.',
+        'Built AI review and defect-analysis agents for Spring Boot, GraphQL, and Angular code, accelerating pull-request cycles by 60%.',
+        'Created a reusable report-configuration framework for 30+ healthcare clients, eliminating 90% of manual onboarding work.',
+      ],
+    },
+    {
+      title: 'Software Engineer',
+      company: 'Community Dreams Foundation',
+      period: 'Jul 2025 - Oct 2025',
+      description:
+        'Delivered a fund-tracking platform with Angular micro-frontends, Go services, MongoDB indexing, and AWS ECS scaling.',
+      achievements: [
+        'Reduced high-traffic disruption by 80% with reusable UI components and dynamic resource allocation.',
+        'Optimized MongoDB document data for 1B+ real-time records across 100+ client accounts.',
+        'Reduced bundle size with lazy-loaded Angular modules, NgRx state management, and reusable feature components.',
+      ],
+    },
+    {
+      title: 'Application Developer',
+      company: 'University of Oklahoma',
+      period: 'Aug 2023 - May 2025',
+      description:
+        'Rebuilt legacy university systems and shipped AI/ML-integrated platforms serving thousands of students and faculty.',
+      achievements: [
+        'Increased engagement by 40% with personalized React learning features, tag navigation, and expert verification support.',
+        'Improved Angular ISS app performance by 30% through reusable components, lazy loading, chat support, and dashboard upgrades.',
+        'Built OAuth 2.0 and JWT access flows for 5,000+ users with zero security incidents.',
+        'Created a kidney-stone detection ML app using Fuzzy C-means, GLCM, and DWT techniques.',
+      ],
+    },
+    {
+      title: 'Software Engineer / Analyst',
+      company: 'Deloitte',
+      period: '2022 - 2023',
+      description:
+        'Led enterprise web and cloud delivery across Java, Angular, AWS, Kubernetes, Helm, and CI/CD environments.',
+      achievements: [
+        'Launched Career Compass to turn Credly data into skill tracking, milestone dashboards, and networking workflows.',
+        'Designed Angular and TypeScript resource-tracking flows for 40 business units with OAuth 2.0 and two-factor authentication.',
+        'Delivered Java, Java EE, and Spring Boot REST APIs with JSON and XML integrations.',
+        'Earned the Game Changer Award for operational delivery across 12 states.',
+      ],
+    },
+    {
+      title: 'Software Developer',
+      company: 'Talentsprint',
+      period: 'Aug 2021 - May 2022',
+      description:
+        'Built secure e-commerce and rental platforms with Angular, Java, Django, Elasticsearch, and NLP-powered support.',
+      achievements: [
+        'Delivered an Angular and Java commerce platform with AES-256 transactions and IBM Watson chat support.',
+        'Implemented REST APIs with JPA, Hibernate, and MySQL composite indexes for sub-second response times.',
+        'Built a Django rental platform with Elasticsearch search and named-entity-recognition chatbot flows.',
+      ],
+    },
+  ];
+
+  const filteredProjects = useMemo(() => {
+    if (activeProjectCategory === 'All') return projects;
+    return projects.filter((project) => project.category === activeProjectCategory);
+  }, [activeProjectCategory, projects]);
+
+  const filteredSkills = useMemo(() => {
+    if (activeSkillCategory === 'All') return skills;
+    return skills.filter((skill) => skill.category === activeSkillCategory);
+  }, [activeSkillCategory, skills]);
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-      
-      // Update active section based on scroll position
-      const sections = ['home', 'about', 'experience', 'projects', 'skills', 'education', 'awards', 'contact'];
-      const current = sections.find(section => {
+      setIsScrolled(window.scrollY > 24);
+
+      const current = navItems.find((section) => {
         const element = document.getElementById(section);
-        if (element) {
-          const rect = element.getBoundingClientRect();
-          return rect.top <= 100 && rect.bottom >= 100;
-        }
-        return false;
+        if (!element) return false;
+        const rect = element.getBoundingClientRect();
+        return rect.top <= 140 && rect.bottom >= 140;
       });
+
       if (current) setActiveSection(current);
     };
 
-    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const projects: Project[] = [
-     {
-  
-    id: 1,
-    title: "Portfolio Website",
-    description: "A responsive and interactive personal portfolio website built with React and Tailwind CSS.",
-    longDescription: "This project showcases my skills, experience, and personal projects. Built using React for dynamic UI and Tailwind CSS for rapid styling, the site features smooth scroll navigation, modal project details, and category filtering for both skills and projects. It includes routing logic, reusable components, dynamic theming, and is deployed using GitHub Pages.",
-    technologies: [
-      "React", "Tailwind CSS", "JavaScript", "Vite", "React Hooks",
-      "Responsive Design", "Lucide Icons", "GitHub Pages",
-      "Component Reusability", "State Management"
-    ],
-    github: "https://github.com/roshini189/website",
-    category: "Full Stack Development",
-    image: `${baseUrl}images/port.jpeg`
-  },{
-      id: 2,
-      title: "AlResearchEase- AI Research Chatbot",
-      description: "Optimized a RAG-based AI web app using Ollama API LLM's and system performance with fine-tuning by 35%.",
-      longDescription: "AIResearchEase is a secure, intelligent AI-powered web application designed to simplify academic research workflows. Built using Retrieval-Augmented Generation (RAG), FAISS-based semantic search, and local Large Language Models (LLMs), the app lets users upload research papers and ask context-aware questions, receiving instant, accurate answers.",
-      technologies: ["Streamlit","Ollama API","Python","NLP","DeepLearning","RAG","LLM","FAISS", "Docker"],
-      github: "https://github.com/roshini189/AI_Research_Ease",
-      category: "Deeplearning",
-      image: `${baseUrl}images/Ai.jpeg` },
-    {
-      id: 3,
-      title: "ViceDetect - ML Prediction System",
-      description: "Advanced machine learning system predicting smoking and drinking habits with 73.2% accuracy using XGBoost and K-means clustering.",
-      longDescription: "Developed a comprehensive machine learning pipeline that analyzes behavioral patterns to predict smoking and drinking habits. Implemented advanced clustering algorithms, ensemble methods, and feature engineering techniques. The system processes large datasets and provides real-time predictions with detailed confidence intervals and feature importance analysis.",
-      technologies: ["R", "XGBoost", "K-means", "Machine Learning", "Data Visualization", "Statistical Analysis"],
-      github: "https://github.com/roshini189/ViceDetect",
-      category: "Machine Learning",
-      image: `${baseUrl}images/vice.jpeg` ,
-     },
-   
-    {
-      id: 4,
-      title: "SafeClick- Phishing Detection",
-      description: " A phishing detection web application using Django and JavaScript with 99.95% accuracy in threat detection with real-time insights.",
-      longDescription: "Safe Click is a real-time phishing detection web application. Users can input any URL, and the system analyzes it using structural, behavioral, and content-based features such as number of dots, use of sensitive termsand more to classify the URL as Safe or Phishing",
-      technologies: ["Python", "Django", "Javascript", "RFECV", "Deep Learning", "Gradient Boosting"],
-      github: "https://github.com/roshini189/Safeclick",
-      Demo:"",
-      category: "DataMining",
-      image: `${baseUrl}images/images.jpeg`  },
-    {
-      id: 5,
-      title: "Agricitease",
-      description: " An Angular-based web application with AES-encrypted Java backend to enable secure transactions between farmers and customers with an integrated IBM Watson Assistant for live chat support and user feedback service.",
-      longDescription: "Agricitease is a secure and user-friendly web application designed to eliminate intermediaries in the agricultural supply chain, enabling direct transactions between farmers and customers. This platform empowers farmers by providing them with a transparent marketplace, ensuring fair pricing and seamless trade.",
-      technologies: ["Java", "Angular", "Javascript", "MySQL", "Springboot", "RestAPI"],
-      github: "https://github.com/roshini189/Agricitease",
-      category: "Full Stack Development",
-      image: `${baseUrl}images/Agricitease.jpeg` },
-    {
-      id: 6,
-      title: "Customer Revenue Predictor - ML Prediction",
-      description: "Predicting customer revenue using advanced regression models and robust data preprocessing techniques in R.",
-      longDescription: "This project focuses on accurately forecasting customer revenue for an online retail platform using a variety of regression techniques. The pipeline begins with extensive data cleaning, missing value imputation, and outlier handling. Key features are transformed using log scaling and grouped at the customer level to better capture behavioral trends. We developed and evaluated multiple models including OLS, Partial Least Squares (PLS), LASSO, and Multivariate Adaptive Regression Splines (MARS). Through careful feature engineering and cross-validation, the MARS model emerged as the best performer, achieving the highest accuracy in terms of RMSE and R². This project showcases not only technical modeling skills but also a deep understanding of data quality, preprocessing strategies, and practical evaluation.",
-      technologies: ["R","Mice","RStudio","Caret","Regression"],
-      github: "https://github.com/roshini189/Customer-Revenue-Predictor",
-      category: "MachineLearning",
-      image: `${baseUrl}images/crp.jpeg` },
-   
-  ];
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setSelectedProject(null);
+        setIsMenuOpen(false);
+      }
+    };
 
-  const skills = [
-    { name: "Java", level: 85, icon: Code, category: "Programming Languages" },
-    { name: "Python", level: 95, icon: Code, category: "Programming Languages" },
-    { name: "JavaScript/TypeScript", level: 90, icon: Code, category: "Programming Languages" },
-    { name: "C", level: 90, icon: Code, category: "Programming Languages" },
-    { name: "C++", level: 90, icon: Code, category: "Programming Languages" },
-    { name: "R", level: 88, icon: Code, category: "Programming Languages" },
-    { name: "Go", level: 80, icon: Code, category: "Programming Languages" },
-    { name: "PostgreSQL/MongoDB", level: 87, icon: Database, category: "Database" },
-{ name: "AzureSQL", level: 85, icon: Database, category: "Database" },
-{ name: "MYSQL", level: 80, icon: Database, category: "Database" },
-{ name: "DynamoDB/Cassandra", level: 78, icon: Database, category: "Database" },
-{ name: "Redis/Valkey", level: 78, icon: Database, category: "Database" },
-    { name: "React/Next.js", level: 92, icon: Globe, category: "Frontend" },
-    { name: "Angular", level: 90, icon: Globe, category: "Frontend" },
-    { name: "Vue.js", level: 78, icon: Globe, category: "Frontend" },
-    { name: "HTML", level: 92, icon: Globe, category: "Frontend" },
-    
-    { name: "CSS", level: 92, icon: Globe, category: "Frontend" },
-    
-    { name: "SCSS", level: 92, icon: Globe, category: "Frontend" },
-    { name: "Node.js/Express", level: 88, icon: Server, category: "Backend" },
-    { name: "Java/Spring Boot", level: 90, icon: Server, category: "Backend" },
-    { name: "GraphQL", level: 85, icon: Server, category: "Backend" },
-    { name: "Apache Kafka", level: 85, icon: Server, category: "Backend" },
-    { name: "JPA/Hibernate", level: 82, icon: Server, category: "Backend" },
-    { name: "Machine Learning", level: 90, icon: Brain, category: "AI/ML" },
-    { name: "Deep Learning", level: 85, icon: Cpu, category: "AI/ML" },
-     { name: "Natural Language Processing", level: 85, icon: Cpu, category: "AI/ML" },
-    { name: "Streamlit", level: 85, icon: Cpu, category: "AI/ML" },
-    { name: "MCP Servers & AI Agents", level: 90, icon: Brain, category: "AI/ML" },
-    { name: "Claude API / GitHub Copilot", level: 88, icon: Brain, category: "AI/ML" },
-    { name: "Prompt Engineering", level: 88, icon: Brain, category: "AI/ML" },
-        { name: "AWS/Azure", level: 83, icon: Cloud, category: "Cloud" },
-    { name: "Docker/Kubernetes", level: 80, icon: Server, category: "DevOps" },
-    { name: "Helm/Terraform", level: 78, icon: Server, category: "DevOps" },
-    { name: "Ansible", level: 75, icon: Server, category: "DevOps" },
-    { name: "Prometheus/Grafana", level: 80, icon: BarChart3, category: "DevOps" },
-    { name: "Git/CI/CD", level: 90, icon: GitBranch, category: "DevOps" },
-    { name: "Eclipse", level: 85, icon: AppWindow, category: "Applications" },
-  { name: "VS Code", level: 90, icon: AppWindow, category: "Applications" },
-  { name: "IntelliJ", level: 88, icon: AppWindow, category: "Applications" },
-  { name: "SonarQube", level: 80, icon: BugPlay, category: "Applications" },
-  { name: "Git", level: 90, icon: GitBranch, category: "Applications" },
-  { name: "JIRA", level: 85, icon: Terminal, category: "Applications" },
-  { name: "Bitbucket", level: 83, icon: GitBranch, category: "Applications" },
-  { name: "JUnit", level: 82, icon: BugPlay, category: "Applications" },
-  { name: "Postman", level: 87, icon: Send, category: "Applications" },
-
-  ];
-const filteredProjects = activeProjectCategory === "All"
-    ? projects
-    : projects.filter(p => {
-        if (activeProjectCategory === "Data Science") {
-          return ["Machine Learning", "DataMining", "Deeplearning"].includes(p.category);
-        } else if (activeProjectCategory === "Full Stack") {
-          return ["Full Stack Development"].includes(p.category);
-        }
-        return false;
-      });
-
-  const filteredSkills = activeSkillCategory === "All"
-    ? skills
-    : skills.filter(skill => skill.category === activeSkillCategory);
-
-
-  const experience = [
-    {
-      title: "Software Engineer",
-      company: "Cotiviti (Endeavour Technologies Inc)",
-      period: "Nov 2025 - Present",
-      description: "Designing cloud-native healthcare microservices with event-driven pipelines and AI-powered developer tooling for 30+ enterprise clients across claims adjudication and appeal processing platforms, maintaining >90% test coverage and <5% defect rate.",
-      achievements: [
-        "Architected Java/Spring Boot microservices and GraphQL APIs with a Kafka event service layer delivering significant throughput and fault isolation across high-volume claim adjudication workflows serving millions of transactions.",
-        "Engineered a custom MCP server integrating Jira, production-log, and context feeder AI agents and skills to autonomously drive spec-based development at enterprise scale.",
-        "Built AI code review and defect-analysis agents autonomously inspecting Spring Boot logic, GraphQL resolver chains, and Angular 16/TypeScript components, accelerating PR cycles by 60% while improving defect-fix and RCA efficiency.",
-        "Designed a reusable report-configuration framework for 30+ healthcare clients with dynamic mapping, standardizing validation rules and automating orchestration, eliminating 90% of manual onboarding for new clients.",
-        "Eliminated duplicate-claim revenue leakage by engineering an Angular 16/TS detection workflow integrating REST polling and Kafka event stream consumption to validate live claim status and enforce deduplication.",
-        "Implemented Prometheus metrics instrumentation and Grafana dashboards across 10+ microservices for real-time SLA visibility, proactive alerting, and data-driven performance tuning.",
-        "Standardized Kubernetes and Helm chart deployments with Jenkins CI/CD automated rollback triggers and blue-green strategies, reducing deployment downtime to near-zero for healthcare-critical systems."
-      ]
-    },
-    {
-      title: "Software Engineer",
-      company: "Community Dreams Foundation",
-      period: "Jul 2025 - Oct 2025",
-      description: "Developed a Java-based financial application to facilitate the organization's fund processing, achieving a 30% reduction in processing overhead.",
-      achievements: [
-        "Architected an Angular 16 micro-frontend and containerized Go microservices fund-tracking platform with reusable UI components and dynamic resource allocation, reducing high-traffic sudden disruptions by 80%.",
-        "Implemented MongoDB document funds data with indexed query optimization to scale to 1+ billion real-time records across 100+ client accounts, achieving API response times under 15 seconds through parallel handoffs.",
-        "Designed a lazy-loaded Angular module architecture with NgRx state management and reusable components, reducing bundle size and enabling rapid feature iteration through the micro-frontend and AWS ECS to support dynamic scale."
-      ]
-    },
-    {
-      title: "Application Developer",
-      company: "University of Oklahoma",
-      period: "Aug 2023 - May 2025",
-      description: "Rebuilt legacy university systems and delivered AI/ML-integrated full-stack platforms driving 40% engagement uplift and 30% performance improvement serving thousands of active users, establishing a team-wide AI-augmented engineering practice.",
-            achievements: [
-       "Boosted user engagement for React.js based learning platform by 40% through implementing personalized content recommendations, flexible tag-based navigation, and expert verification support.",
-  "Redesigned ISS web application using Angular 16 to incorporate reusable components for chat support and inter active dashboards, utilizing lazy loading and enhanced overall application performance by 30%.",
- "Designed a secure Azure SQL database using TDE encryption and role-based access control to store student records",
-      "Contributed to medical advancement by designing a machine learning-based web app that detects kidney stones using the Fuzzy C-means algorithm, enhanced with GLCM and DWT techniques.",
-      "Integrated Gemini and GitHub Copilot for AI-assisted LLM test generation and code scaffolding, establishing team-wide AI-augmented engineering practices across all active projects.",
-      "Built OAuth 2.0/JWT integrations securing access for 5,000+ student and faculty users with zero security incidents."]
-    },
-    {
-      title: "Software Engineer/Analyst",
-      company: "Deloitte",
-      period: "2022 - 2023",
-      description: "Led end-to-end development of web and enterprise apps using Java, Angular, and JavaScript, improving scalability and deployment through AWS, Kubernetes, and CI/CD tools. Recognized with the Game Changer Award for streamlining operations across 12 states.",
-      achievements: [
-        "Launched Career Compass, a Javascript web application employing Credly data to enhance skill tracking with an integrated milestone dashboard and networking module to ease career growth opportunities by 60%.",
-"Designed a Resource Tracking application using Angular/Typescript, optimizing tracking performance for 40 business units with enhanced OAuth 2.0 security protocols and Two-Factor Authentication."
- ,"Developed microservices, REST APIs using JAVA/Java EE/ SpringBoot and experienced working with JSON/XML."
- ,"Incorporated Kubernetes and helm charts to streamline the application maintenance and deployment process."
- ,"Hands-on experience with PCF, AWS, CI/CD, and associated tools JIRA, Jenkins, Git."
- ,"Honored with Game Changer award for optimizing operations & ensuring timely rollouts across 12 states.",   ]
-    },
-    {
-      title: "Software Developer",
-      company: "Talentsprint",
-      period: "Aug 2021 - May 2022",
-      description: "Delivered full-stack platforms integrating AES-256 encryption, IBM Watson NLP, and Elasticsearch-powered search, increasing buyer engagement by 40% and achieving <100ms API response times.",
-      achievements: [
-         "Architected an Angular/Java e-commerce platform with AES-256-encrypted transactions and IBM Watson for real-time chat, intent classification, and automated query resolution, boosting user engagement by 40% within 60 days."
- ,"Implemented REST APIs with JPA/Hibernate and MySQL composite-index queries achieving sub-1-second response times."
- ,"Built a Django/Python rental platform with Elasticsearch-backed multi-filter property search and an NLP conversational chatbot using named-entity recognition, improving search-to-inquiry conversion and match time by 35%."
- ,"Gained hands-on expertise in Angular, Django, Core Java, Python, and machine learning tools, while strengthening skills in secure web application design and deployment.",
-   ] },
-  ];
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const scrollToSection = (sectionId: string) => {
     document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
+    setIsMenuOpen(false);
   };
 
+  const projectCategories = ['All', 'AI/Data', 'Full Stack', 'Platform'];
+  const skillCategories = ['All', 'Languages', 'Frontend', 'Backend', 'Data', 'AI/ML', 'Cloud', 'Tools'];
+  const featuredMetrics = [
+    { value: '5+', label: 'years across enterprise software' },
+    { value: '30+', label: 'client workflows supported' },
+    { value: '60%', label: 'faster PR cycles with AI tooling' },
+    { value: '90%', label: 'manual onboarding eliminated' },
+  ];
+  const focusAreas = [
+    { icon: Server, label: 'Cloud-native microservices', detail: 'Spring Boot, GraphQL, Kafka, Kubernetes' },
+    { icon: Brain, label: 'AI-augmented engineering', detail: 'MCP servers, agents, RAG, LLM workflows' },
+    { icon: BarChart3, label: 'Data and ML systems', detail: 'Regression, NLP, dashboards, model evaluation' },
+    { icon: ShieldCheck, label: 'Secure product delivery', detail: 'OAuth, JWT, encrypted transactions, healthcare scale' },
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      {/* Navigation */}
-      <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-slate-900/95 backdrop-blur-md shadow-lg' : 'bg-transparent'
-      }`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div className="text-2xl font-bold text-white">
-              Roshini Talluru
-            </div>
-            <div className="hidden md:flex space-x-8">
-              {['home', 'about','experience',  'projects', 'skills', 'education','awards','contact'].map((item) => (
-                <button
-                  key={item}
-                  onClick={() => scrollToSection(item)}
-                  className={`capitalize transition-colors duration-200 ${
-                    activeSection === item 
-                      ? 'text-purple-400 border-b-2 border-purple-400' 
-                      : 'text-white hover:text-purple-300'
-                  }`}
-                >
-                  {item}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </nav>
-
-     
-    
-      {/* Hero Section */}
-      <section id="home" className="min-h-screen flex items-center justify-center relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-blue-600/20"></div>
-        <div className="text-center z-10 px-4">
-          <div className="mb-8">
-            <div className="w-32 h-32 mx-auto mb-6 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 p-1">
-              <img
-  src={`${baseUrl}images/bio.jpeg`}
-  alt="Roshini Talluru"
-  className="w-full h-full rounded-full object-cover"
-/>
-            </div>
-          </div>
-          <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 animate-fade-in">
-            Roshini Talluru
-          </h1>
-          <p className="text-xl md:text-2xl text-purple-200 mb-4 max-w-3xl mx-auto">
-            Software Engineer — Full-Stack, Cloud-Native & AI-Augmented Systems
-          </p>
-          <p className="text-lg text-purple-300 mb-8 max-w-2xl mx-auto">
-            Building healthcare-scale microservices and AI-powered developer tooling at the intersection of software engineering and data science
-          </p>
-          <div className="flex justify-center space-x-6 mb-12">
-            <a href="mailto:roshini_t@outlook.com" className="text-white hover:text-purple-300 transition-colors">
-              <Mail className="w-8 h-8" />
-            </a>
-            <a href="https://linkedin.com/in/roshinitalluru/" className="text-white hover:text-purple-300 transition-colors">
-              <Linkedin className="w-8 h-8" />
-            </a>
-            <a href="https://github.com/roshini189" className="text-white hover:text-purple-300 transition-colors">
-              <Github className="w-8 h-8" />
-            </a>
-
-{/* Resume Link */}
-<a
-  href="/images/Roshini_Talluru_Resume.pdf"
-  target="_blank"
-  rel="noopener noreferrer"
-  className="text-white hover:text-purple-300 transition-colors"
->
-  <FileText className="w-8 h-8" />
-</a>
-          </div>
-          <button 
-            onClick={() => scrollToSection('about')}
-            className="animate-bounce text-white hover:text-purple-300 transition-colors"
+    <div className="min-h-screen bg-[#f7f4ee] text-[#161616]">
+      <nav
+        className={`fixed top-0 z-50 w-full border-b transition-all duration-300 ${
+          isScrolled
+            ? 'border-black/10 bg-[#f7f4ee]/90 shadow-[0_12px_40px_rgba(22,22,22,0.08)] backdrop-blur-xl'
+            : 'border-transparent bg-transparent'
+        }`}
+      >
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+          <button
+            type="button"
+            onClick={() => scrollToSection('home')}
+            className="group flex items-center gap-3 text-left"
+            aria-label="Go to home"
           >
-            <ChevronDown className="w-8 h-8" />
+            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#161616] text-sm font-black text-[#f7f4ee]">
+              RT
+            </span>
+            <span>
+              <span className="block text-sm font-black uppercase tracking-[0.24em] text-[#161616]">
+                Roshini
+              </span>
+              <span className="block text-xs font-semibold text-[#666056]">Software Engineer</span>
+            </span>
           </button>
-        </div>
-      </section>
 
-      {/* About Section */}
-      <section id="about" className="py-20 px-4">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl font-bold text-white text-center mb-16">About Me</h2>
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <p className="text-lg text-gray-300 leading-relaxed">
-                I'm a versatile technologist with expertise spanning full-stack development, cloud-native systems, 
-                and data science. As a Software Engineer at Cotiviti, I design healthcare-scale microservices and 
-                event-driven pipelines, and build AI-powered developer tooling that accelerates engineering teams 
-                across 30+ enterprise clients.
-              </p>
-              <p className="text-lg text-gray-300 leading-relaxed">
-                From developing scalable web applications with modern frameworks to implementing machine learning 
-                models and AI agents that drive business decisions, I thrive at the intersection of technology and data. 
-                My experience includes building end-to-end systems, engineering custom MCP servers and AI agents, 
-                optimizing performance, and creating intuitive user experiences.
-              </p>
-              <p className="text-lg text-gray-300 leading-relaxed">
-                I'm passionate about leveraging technology to solve complex problems and am always eager to 
-                learn new technologies and methodologies that can enhance my ability to deliver impactful solutions.
-              </p>
-              <p className="text-lg text-gray-300 leading-relaxed">
-              Recipient of multiple academic awards and scholarships for excellence in software engineering and data analytics.
-           </p>
-         
-
-              <div className="flex items-center space-x-4 text-purple-300">
-                <MapPin className="w-5 h-5" />
-                <span>Frisco, Texas</span>
-              </div>
-            </div>
-            <div className="bg-slate-900/50 backdrop-blur-sm rounded-2xl p-8 border border-purple-600/20">
-              <h3 className="text-2xl font-semibold text-white mb-6">Expertise Areas</h3>
-              <div className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <Globe className="w-5 h-5 text-purple-400" />
-                  <span className="text-gray-300">Full-Stack Development</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <Brain className="w-5 h-5 text-purple-400" />
-                  <span className="text-gray-300">Machine Learning & AI</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <BarChart3 className="w-5 h-5 text-purple-400" />
-                  <span className="text-gray-300">Data Science & Analytics</span>
-                </div>
-  
-                <div className="flex items-center space-x-3">
-                  <Calendar className="w-5 h-5 text-purple-400" />
-                  <span className="text-gray-300">5+ Years Experience</span>
-                </div>
-                  <div className="flex items-center space-x-3">
-  <FileText className="w-5 h-5 text-purple-400" />
-  <a
-    href={`${baseUrl}images/Roshini_Talluru_Resume.pdf`}
-    target="_blank"
-    rel="noopener noreferrer"
-    className="text-purple-300 hover:underline"
-  >
-    Curious about the journey behind these skills? Peek into my resume.
-  </a>
-</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-{/* Experience Section */}
-      <section id="experience" className="py-20 px-4 bg-slate-800/30">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl font-bold text-white text-center mb-16">Professional Experience</h2>
-          <div className="space-y-8">
-            {experience.map((exp, index) => (
-              <div key={index} className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-8 border border-purple-500/20">
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
-                  <div>
-                    <h3 className="text-2xl font-semibold text-white mb-2">{exp.title}</h3>
-                    <p className="text-purple-300 text-lg">{exp.company}</p>
-                  </div>
-                  <div className="flex items-center space-x-2 text-gray-400 mt-2 md:mt-0">
-                    <Calendar className="w-4 h-4" />
-                    <span>{exp.period}</span>
-                  </div>
-                </div>
-                <p className="text-gray-300 mb-6 leading-relaxed">{exp.description}</p>
-                <div className="space-y-2">
-                  <h4 className="text-white font-semibold mb-3">Key Achievements:</h4>
-                  {exp.achievements.map((achievement, idx) => (
-                    <div key={idx} className="flex items-start space-x-3">
-                      <Star className="w-4 h-4 text-purple-400 mt-1 flex-shrink-0" />
-                      <span className="text-gray-300">{achievement}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-       {/* Projects Section */}
-      <section id="projects" className="py-20 px-4 bg-slate-800/30">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl font-bold text-white text-center mb-16">Featured Projects</h2>
-          <div className="flex justify-center gap-4 mb-12">
-            {['All', 'Data Science', 'Full Stack'].map((cat) => (
+          <div className="hidden items-center gap-1 lg:flex">
+            {navItems.map((item) => (
               <button
-                key={cat}
-                onClick={() => setActiveProjectCategory(cat)}
-                className={`px-4 py-2 rounded-full text-sm font-semibold border border-purple-500/30 text-white transition ${
-                  activeProjectCategory === cat ? 'bg-purple-600/30' : 'hover:bg-purple-600/10'
+                key={item}
+                type="button"
+                onClick={() => scrollToSection(item)}
+                className={`rounded-lg px-3 py-2 text-sm font-semibold capitalize transition ${
+                  activeSection === item
+                    ? 'bg-[#161616] text-white'
+                    : 'text-[#4c4740] hover:bg-black/5 hover:text-[#161616]'
                 }`}
               >
-                {cat}
+                {item}
               </button>
             ))}
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredProjects.map((project) => (
-              <div key={project.id} className="group bg-slate-800/50 backdrop-blur-sm rounded-2xl overflow-hidden border border-purple-500/20 hover:border-purple-400/40 transition-all duration-300 hover:transform hover:scale-105">
-                <div className="relative overflow-hidden">
-                  <img src={project.image} alt={project.title} className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent"></div>
-                  <div className="absolute top-4 right-4">
-                    <span className="bg-purple-600/80 text-white px-3 py-1 rounded-full text-sm">
-                      {project.category}
-                    </span>
+
+          <div className="flex items-center gap-2">
+            <a
+              href={`${baseUrl}images/Roshini_Talluru_Resume.pdf`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden items-center gap-2 rounded-lg bg-[#df5a3f] px-4 py-2 text-sm font-bold text-white shadow-[0_10px_24px_rgba(223,90,63,0.24)] transition hover:bg-[#c94a32] sm:flex"
+            >
+              <FileText className="h-4 w-4" />
+              Resume
+            </a>
+            <button
+              type="button"
+              onClick={() => setIsMenuOpen((value) => !value)}
+              className="rounded-lg border border-black/10 p-2 text-[#161616] lg:hidden"
+              aria-label="Toggle navigation"
+              aria-expanded={isMenuOpen}
+            >
+              {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
+        </div>
+
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="overflow-hidden border-t border-black/10 bg-[#f7f4ee] lg:hidden"
+            >
+              <div className="grid gap-1 px-4 py-4">
+                {navItems.map((item) => (
+                  <button
+                    key={item}
+                    type="button"
+                    onClick={() => scrollToSection(item)}
+                    className="rounded-lg px-3 py-3 text-left text-sm font-bold capitalize text-[#2f2a24] hover:bg-black/5"
+                  >
+                    {item}
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </nav>
+
+      <main>
+        <section id="home" className="relative min-h-screen overflow-hidden pt-28">
+          <div className="absolute inset-x-0 top-0 h-[58%] bg-[#161616]" />
+          <div className="absolute inset-x-0 top-0 h-[58%] pattern-grid opacity-35" />
+          <div className="relative mx-auto grid min-h-[calc(100vh-7rem)] max-w-7xl items-center gap-10 px-4 pb-12 sm:px-6 lg:grid-cols-[1.08fr_0.92fr] lg:px-8">
+            <motion.div
+              initial={{ opacity: 0, y: 28 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.65, ease: 'easeOut' }}
+              className="text-white"
+            >
+              <div className="mb-6 inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm font-bold text-[#e7d6b7] backdrop-blur">
+                <Sparkles className="h-4 w-4" />
+                Full-stack, AI, and cloud-native systems
+              </div>
+              <h1 className="max-w-4xl text-5xl font-black leading-[0.95] tracking-normal sm:text-6xl lg:text-7xl">
+                Roshini Talluru builds reliable software with an AI systems edge.
+              </h1>
+              <p className="mt-6 max-w-2xl text-lg leading-8 text-[#ddd4c6] sm:text-xl">
+                Software Engineer in Frisco, Texas, designing healthcare-scale microservices,
+                event pipelines, AI developer tooling, and data products that turn complex
+                workflows into usable systems.
+              </p>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <button
+                  type="button"
+                  onClick={() => scrollToSection('projects')}
+                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#f4c542] px-5 py-3 text-sm font-black text-[#161616] transition hover:bg-[#f1b91f]"
+                >
+                  <Briefcase className="h-4 w-4" />
+                  View Work
+                </button>
+                <a
+                  href="mailto:roshini_t@outlook.com"
+                  className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/20 px-5 py-3 text-sm font-black text-white transition hover:bg-white/10"
+                >
+                  <Mail className="h-4 w-4" />
+                  Contact
+                </a>
+              </div>
+              <button
+                type="button"
+                onClick={() => scrollToSection('about')}
+                className="mt-10 inline-flex items-center gap-2 text-sm font-bold text-[#e7d6b7] transition hover:text-white"
+              >
+                <ChevronDown className="h-5 w-5" />
+                Explore profile
+              </button>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.65, delay: 0.1, ease: 'easeOut' }}
+              className="relative"
+            >
+              <div className="relative overflow-hidden rounded-lg border border-white/15 bg-[#24211d] shadow-[0_30px_80px_rgba(0,0,0,0.34)]">
+                <img
+                  src={`${baseUrl}images/bio.jpeg`}
+                  alt="Roshini Talluru"
+                  className="h-[520px] w-full object-cover object-center saturate-[0.96]"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#161616] via-transparent to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <div className="grid grid-cols-2 gap-3">
+                    {featuredMetrics.map((metric) => (
+                      <div key={metric.label} className="rounded-lg border border-white/15 bg-white/12 p-4 backdrop-blur-md">
+                        <div className="text-3xl font-black text-white">{metric.value}</div>
+                        <div className="mt-1 text-xs font-semibold leading-5 text-[#e7d6b7]">{metric.label}</div>
+                      </div>
+                    ))}
                   </div>
                 </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold text-white mb-3">{project.title}</h3>
-                  <p className="text-gray-300 mb-4 line-clamp-3">{project.description}</p>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {project.technologies.slice(0, 3).map((tech) => (
-                      <span key={tech} className="bg-purple-600/20 text-purple-300 px-2 py-1 rounded text-sm">
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        <section id="about" className="section-shell">
+          <SectionHeader title="Engineer, builder, and practical AI systems thinker" id="about" />
+          <div className="grid gap-8 lg:grid-cols-[0.92fr_1.08fr]">
+            <div className="overflow-hidden rounded-lg border border-black/10 bg-white">
+              <img
+                src={`${baseUrl}images/port.jpeg`}
+                alt="Portfolio project preview"
+                className="h-80 w-full object-cover"
+              />
+              <div className="p-6">
+                <div className="flex items-center gap-2 text-sm font-bold text-[#138f8a]">
+                  <MapPin className="h-4 w-4" />
+                  Frisco, Texas
+                </div>
+                <p className="mt-4 text-lg font-semibold leading-8 text-[#2d2924]">
+                  I work where distributed systems, product clarity, data, and AI tooling meet.
+                </p>
+              </div>
+            </div>
+            <div>
+              <div className="space-y-5 text-lg leading-8 text-[#4c4740]">
+                <p>
+                  I am a software engineer with experience across full-stack development,
+                  cloud-native services, healthcare workflows, data science, and AI-augmented
+                  engineering. At Cotiviti, I build microservices, GraphQL APIs, Kafka event
+                  flows, and AI developer tools for enterprise claims platforms.
+                </p>
+                <p>
+                  My work spans secure web apps, machine-learning systems, custom MCP servers,
+                  Angular and React interfaces, Kubernetes delivery, observability, and reusable
+                  platform patterns that help teams ship with less friction.
+                </p>
+              </div>
+              <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                {focusAreas.map((area) => {
+                  const Icon = area.icon;
+                  return (
+                    <div key={area.label} className="rounded-lg border border-black/10 bg-white p-5 shadow-sm">
+                      <Icon className="h-6 w-6 text-[#df5a3f]" />
+                      <h3 className="mt-4 text-lg font-black text-[#161616]">{area.label}</h3>
+                      <p className="mt-2 text-sm leading-6 text-[#666056]">{area.detail}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="experience" className="section-shell bg-[#ebe4d8]">
+          <SectionHeader title="Enterprise delivery with measurable outcomes" id="experience" />
+          <div className="space-y-5">
+            {experience.map((exp) => (
+              <article
+                key={`${exp.company}-${exp.period}`}
+                className="rounded-lg border border-black/10 bg-[#fdfbf7] p-6 shadow-sm"
+              >
+                <div className="grid gap-5 lg:grid-cols-[0.32fr_0.68fr]">
+                  <div>
+                    <div className="inline-flex items-center gap-2 rounded-lg bg-[#161616] px-3 py-2 text-xs font-black uppercase text-white">
+                      <CalendarDays className="h-4 w-4" />
+                      {exp.period}
+                    </div>
+                    <h3 className="mt-5 text-2xl font-black text-[#161616]">{exp.title}</h3>
+                    <p className="mt-1 text-base font-bold text-[#138f8a]">{exp.company}</p>
+                    <p className="mt-4 text-sm leading-6 text-[#5c554c]">{exp.description}</p>
+                  </div>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {exp.achievements.map((achievement) => (
+                      <div key={achievement} className="flex gap-3 rounded-lg border border-black/10 bg-white p-4">
+                        <Star className="mt-1 h-4 w-4 shrink-0 text-[#df5a3f]" />
+                        <p className="text-sm leading-6 text-[#3c3731]">{achievement}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section id="projects" className="section-shell">
+          <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+            <SectionHeader title="Case studies recruiters can scan fast" id="projects" align="left" />
+            <SegmentedControl
+              items={projectCategories}
+              activeItem={activeProjectCategory}
+              onChange={setActiveProjectCategory}
+              label="Project category"
+            />
+          </div>
+          <div className="mt-10 grid gap-5 lg:grid-cols-3">
+            {filteredProjects.map((project) => (
+              <article
+                key={project.id}
+                className="group flex min-h-[520px] flex-col overflow-hidden rounded-lg border border-black/10 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(22,22,22,0.12)]"
+              >
+                <div className="relative h-56 overflow-hidden bg-[#161616]">
+                  <img
+                    src={project.image}
+                    alt={`${project.title} project preview`}
+                    className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#161616]/70 to-transparent" />
+                  <span className="absolute left-4 top-4 rounded-lg bg-[#f4c542] px-3 py-2 text-xs font-black uppercase text-[#161616]">
+                    {project.category}
+                  </span>
+                </div>
+                <div className="flex flex-1 flex-col p-5">
+                  <p className="text-sm font-black uppercase text-[#df5a3f]">{project.eyebrow}</p>
+                  <h3 className="mt-2 text-2xl font-black leading-tight text-[#161616]">{project.title}</h3>
+                  <p className="mt-3 text-sm leading-6 text-[#5c554c]">{project.description}</p>
+                  <div className="mt-5 rounded-lg border border-[#138f8a]/20 bg-[#e4f4f2] p-4">
+                    <p className="text-xs font-black uppercase text-[#0c6d69]">Outcome</p>
+                    <p className="mt-1 text-sm font-bold leading-6 text-[#184743]">{project.impact}</p>
+                  </div>
+                  <div className="mt-5 flex flex-wrap gap-2">
+                    {project.technologies.slice(0, 5).map((tech) => (
+                      <span key={tech} className="rounded-lg bg-[#f2ede4] px-2.5 py-1.5 text-xs font-bold text-[#4c4740]">
                         {tech}
                       </span>
                     ))}
-                    {project.technologies.length > 3 && (
-                      <span className="bg-gray-600/20 text-gray-400 px-2 py-1 rounded text-sm">
-                        +{project.technologies.length - 3} more
-                      </span>
-                    )}
                   </div>
-                  <div className="flex justify-between items-center">
-                    <button onClick={() => setSelectedProject(project)} className="text-purple-400 hover:text-purple-300 transition-colors">
-                      Learn More
+                  <div className="mt-auto flex items-center justify-between pt-6">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedProject(project)}
+                      className="inline-flex items-center gap-2 rounded-lg border border-black/10 px-4 py-2 text-sm font-black text-[#161616] transition hover:bg-[#161616] hover:text-white"
+                    >
+                      <FileText className="h-4 w-4" />
+                      Details
                     </button>
-                    <a href={project.github} className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors">
-                      <Github className="w-4 h-4" />
-                      <ExternalLink className="w-4 h-4" />
+                    <a
+                      href={project.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 rounded-lg bg-[#161616] px-4 py-2 text-sm font-black text-white transition hover:bg-[#33302a]"
+                    >
+                      <Github className="h-4 w-4" />
+                      Code
                     </a>
                   </div>
                 </div>
-              </div>
+              </article>
             ))}
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Skills Section */}
-      <section id="skills" className="py-20 px-4">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl font-bold text-white text-center mb-16">Skills & Technologies</h2>
-          <div className="flex justify-center gap-4 mb-12">
-            {['All', 'Programming Languages', 'Database', 'Frontend', 'Backend', 'AI/ML','Applications', 'Cloud', 'DevOps'].map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setActiveSkillCategory(cat)}
-                className={`px-4 py-2 rounded-full text-sm font-semibold border border-purple-500/30 text-white transition ${
-                  activeSkillCategory === cat ? 'bg-purple-600/30' : 'hover:bg-purple-600/10'
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
+        <section id="skills" className="section-shell bg-[#161616] text-white">
+          <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+            <SectionHeader title="A stack built for product and platform work" id="skills" align="left" inverted />
+            <SegmentedControl
+              items={skillCategories}
+              activeItem={activeSkillCategory}
+              onChange={setActiveSkillCategory}
+              label="Skill category"
+              inverted
+            />
           </div>
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {filteredSkills.map((skill) => {
-              const IconComponent = skill.icon;
+              const Icon = skill.icon;
               return (
-                <div key={skill.name} className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-6 border border-purple-500/20">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center space-x-3">
-                      <IconComponent className="w-6 h-6 text-purple-400" />
+                <div key={skill.name} className="rounded-lg border border-white/10 bg-white/[0.06] p-5">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#f4c542] text-[#161616]">
+                        <Icon className="h-5 w-5" />
+                      </span>
                       <div>
-                        <span className="text-white font-semibold">{skill.name}</span>
-                        <div className="text-sm text-purple-300">{skill.category}</div>
+                        <h3 className="font-black text-white">{skill.name}</h3>
+                        <p className="text-sm font-semibold text-[#b6ad9d]">{skill.category}</p>
                       </div>
                     </div>
-                    <span className="text-purple-300">{skill.level}%</span>
+                    <span className="text-sm font-black text-[#f4c542]">{skill.level}%</span>
                   </div>
-                  <div className="w-full bg-slate-700 rounded-full h-2">
-                    <div className="bg-gradient-to-r from-purple-500 to-blue-500 h-2 rounded-full transition-all duration-1000 ease-out" style={{ width: `${skill.level}%` }}></div>
+                  <div className="mt-5 h-2 rounded-full bg-white/10">
+                    <div
+                      className="h-2 rounded-full bg-gradient-to-r from-[#df5a3f] via-[#f4c542] to-[#28a39d]"
+                      style={{ width: `${skill.level}%` }}
+                    />
                   </div>
                 </div>
               );
             })}
           </div>
-        </div>
-      </section>
-      
-{/* Education Section */}
-<section id="education" className="py-20 px-4 bg-slate-800/30">
-  <div className="max-w-6xl mx-auto">
-    <h2 className="text-4xl font-bold text-white text-center mb-16">Education</h2>
-    <div className="space-y-8">
-      <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-8 border border-purple-500/20">
-        <div className="flex justify-between items-center mb-4">
-          <div>
-            <h3 className="text-xl font-semibold text-white">M.S. in Computer Science</h3>
-            <p className="text-purple-300">University of Oklahoma, Norman, OK</p>
-          </div>
-          <span className="text-gray-400">Aug 2023 - May 2025</span>
-          </div>
-        <p className="text-gray-300">Awarded the Dorothy Grace Barkow Scholarship ($3,000) in recognition of academic excellence.</p>  
-        <p className="text-gray-300">Relevant Coursework: Machine Learning, Advanced Data Mining, Database Systems, Deep Learning, Healthcare Analytics, Big Data.</p>
-      </div>
-      <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-8 border border-purple-500/20">
-        <div className="flex justify-between items-center mb-4">
-          <div>
-            <h3 className="text-xl font-semibold text-white">B.Tech in Computer Science and Engineering</h3>
-            <p className="text-purple-300">BVRIT Hyderabad</p>
-          </div>
-          <span className="text-gray-400">2017 - 2021</span>
-        </div>
-        <p className="text-gray-300">Graduated with First Class Distinction. Involved in research and Women in Software Engineering Program (WISE).</p>
-      </div>
-    </div>
-  </div>
-</section>
+        </section>
 
-      {/* Awards & Publications Section */}
-      <section id="awards" className="py-20 px-4">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl font-bold text-white text-center mb-16">Awards & Publications</h2>
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-8 border border-purple-500/20">
-              <div className="flex items-center space-x-3 mb-4">
-                <Award className="w-6 h-6 text-purple-400" />
-                <h3 className="text-xl font-semibold text-white">Awards & Recognition</h3>
+        <section id="education" className="section-shell">
+          <SectionHeader title="Computer science foundation with applied research" id="education" />
+          <div className="grid gap-5 lg:grid-cols-2">
+            <EducationCard
+              degree="M.S. in Computer Science"
+              school="University of Oklahoma, Norman, OK"
+              period="Aug 2023 - May 2025"
+              details={[
+                'Dorothy Grace Barkow Scholarship recipient for academic excellence.',
+                'Coursework in Machine Learning, Advanced Data Mining, Database Systems, Deep Learning, Healthcare Analytics, and Big Data.',
+              ]}
+            />
+            <EducationCard
+              degree="B.Tech in Computer Science and Engineering"
+              school="BVRIT Hyderabad"
+              period="2017 - 2021"
+              details={[
+                'Graduated with First Class Distinction.',
+                'Participated in research and the Women in Software Engineering Program.',
+              ]}
+            />
+          </div>
+        </section>
+
+        <section id="awards" className="section-shell bg-[#ebe4d8]">
+          <SectionHeader title="Signals of delivery, research, and craft" id="awards" />
+          <div className="grid gap-5 lg:grid-cols-2">
+            <RecognitionCard
+              icon={Award}
+              title="Awards and Certifications"
+              items={[
+                'Game Changer Award, Deloitte, for outstanding delivery performance and zero-escalation rollouts.',
+                'Dorothy Grace Barkow Scholarship ($3,000) for academic excellence.',
+                'Oracle Certified: Advanced Artificial Intelligence with Machine Learning in Java.',
+                'Microsoft Certified: Azure AI Engineer Associate.',
+                'Codinza Certified: Web Development using ReactJS and Java.',
+              ]}
+            />
+            <RecognitionCard
+              icon={FileText}
+              title="Research Publication"
+              items={[
+                '"Examination Room Guidance System," Third International Conference on Engineering and Advancement in Technology (ICEAT), IEEE, 2022.',
+              ]}
+            />
+          </div>
+        </section>
+
+        <section id="contact" className="section-shell">
+          <div className="rounded-lg bg-[#161616] p-6 text-white sm:p-10 lg:p-12">
+            <div className="grid gap-8 lg:grid-cols-[0.92fr_1.08fr] lg:items-end">
+              <div>
+                <p className="text-sm font-black uppercase text-[#f4c542]">{sectionEyebrows.contact}</p>
+                <h2 className="mt-3 max-w-2xl text-4xl font-black leading-tight sm:text-5xl">
+                  Let us build something precise, useful, and durable.
+                </h2>
+                <p className="mt-5 max-w-xl text-lg leading-8 text-[#ddd4c6]">
+                  Open to software engineering, AI platform, data product, and full-stack opportunities.
+                </p>
               </div>
-              <ul className="space-y-3">
-                <li className="flex items-start space-x-3">
-                  <Star className="w-4 h-4 text-purple-400 mt-1 flex-shrink-0" />
-                  <span className="text-gray-300">Game Changer Award, Deloitte — recognized for outstanding delivery performance and zero-escalation rollouts.</span>
-                </li>
-                <li className="flex items-start space-x-3">
-                  <Star className="w-4 h-4 text-purple-400 mt-1 flex-shrink-0" />
-                  <span className="text-gray-300">Dorothy Grace Barkow Scholarship ($3,000) — awarded for academic excellence.</span>
-                </li>
-                <li className="flex items-start space-x-3">
-                  <Star className="w-4 h-4 text-purple-400 mt-1 flex-shrink-0" />
-                  <span className="text-gray-300">Oracle Certified — Advanced Artificial Intelligence with Machine Learning in Java.</span>
-                </li>
-                <li className="flex items-start space-x-3">
-                  <Star className="w-4 h-4 text-purple-400 mt-1 flex-shrink-0" />
-                  <span className="text-gray-300">Microsoft Certified — Azure AI Engineer Associate.</span>
-                </li>
-                <li className="flex items-start space-x-3">
-                  <Star className="w-4 h-4 text-purple-400 mt-1 flex-shrink-0" />
-                  <span className="text-gray-300">Codinza Certified — Web Development using ReactJS and Java.</span>
-                </li>
-              </ul>
-            </div>
-            <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-8 border border-purple-500/20">
-              <div className="flex items-center space-x-3 mb-4">
-                <FileText className="w-6 h-6 text-purple-400" />
-                <h3 className="text-xl font-semibold text-white">Research Publications</h3>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <a
+                  href="mailto:roshini_t@outlook.com"
+                  className="rounded-lg border border-white/10 bg-white/[0.06] p-5 transition hover:bg-white/[0.1]"
+                >
+                  <Mail className="h-6 w-6 text-[#f4c542]" />
+                  <h3 className="mt-4 font-black">Email</h3>
+                  <p className="mt-1 text-sm text-[#ddd4c6]">roshini_t@outlook.com</p>
+                </a>
+                <a
+                  href="https://linkedin.com/in/roshinitalluru/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-lg border border-white/10 bg-white/[0.06] p-5 transition hover:bg-white/[0.1]"
+                >
+                  <Linkedin className="h-6 w-6 text-[#f4c542]" />
+                  <h3 className="mt-4 font-black">LinkedIn</h3>
+                  <p className="mt-1 text-sm text-[#ddd4c6]">linkedin.com/in/roshinitalluru</p>
+                </a>
+                <a
+                  href="https://github.com/roshini189"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-lg border border-white/10 bg-white/[0.06] p-5 transition hover:bg-white/[0.1]"
+                >
+                  <Github className="h-6 w-6 text-[#f4c542]" />
+                  <h3 className="mt-4 font-black">GitHub</h3>
+                  <p className="mt-1 text-sm text-[#ddd4c6]">github.com/roshini189</p>
+                </a>
+                <a
+                  href={`${baseUrl}images/Roshini_Talluru_Resume.pdf`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-lg border border-white/10 bg-white/[0.06] p-5 transition hover:bg-white/[0.1]"
+                >
+                  <FileText className="h-6 w-6 text-[#f4c542]" />
+                  <h3 className="mt-4 font-black">Resume</h3>
+                  <p className="mt-1 text-sm text-[#ddd4c6]">Download PDF</p>
+                </a>
               </div>
-              <ul className="space-y-3">
-                <li className="flex items-start space-x-3">
-                  <Star className="w-4 h-4 text-purple-400 mt-1 flex-shrink-0" />
-                  <span className="text-gray-300">"Examination Room Guidance System" — Third International Conference on Engineering and Advancement in Technology (ICEAT), IEEE, 2022.</span>
-                </li>
-              </ul>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </main>
 
-      {/* Contact Section */}
-      <section id="contact" className="py-20 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl font-bold text-white mb-8">Let's Connect</h2>
-          <p className="text-xl text-gray-300 mb-12">
-            I'm always interested in discussing new opportunities, collaborations, and innovative projects
-          </p>
-          <div className="grid md:grid-cols-3 gap-8">
-            <a
-              href="mailto:roshini_t@outlook.com"
-              className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-8 border border-purple-500/20 hover:border-purple-400/40 transition-all duration-300 hover:transform hover:scale-105 group"
-            >
-              <Mail className="w-12 h-12 text-purple-400 mx-auto mb-4 group-hover:scale-110 transition-transform" />
-              <h3 className="text-white font-semibold mb-2">Email</h3>
-              <p className="text-gray-300">roshini_t@outlook.com</p>
-            </a>
-            <a
-              href="https://linkedin.com/in/roshinitalluru/"
-              className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-8 border border-purple-500/20 hover:border-purple-400/40 transition-all duration-300 hover:transform hover:scale-105 group"
-            >
-              <Linkedin className="w-12 h-12 text-purple-400 mx-auto mb-4 group-hover:scale-110 transition-transform" />
-              <h3 className="text-white font-semibold mb-2">LinkedIn</h3>
-              <p className="text-gray-300">Connect with me</p>
-            </a>
-            <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-8 border border-purple-500/20">
-              <MapPin className="w-12 h-12 text-purple-400 mx-auto mb-4" />
-              <h3 className="text-white font-semibold mb-2">Location</h3>
-              <p className="text-gray-300">Frisco, TX</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="py-8 px-4 border-t border-purple-500/20">
-        <div className="max-w-6xl mx-auto text-center">
-          <p className="text-gray-400">
-            © 2025 Roshini Talluru. All Rights Reserved.
-          </p>
-        </div>
+      <footer className="border-t border-black/10 bg-[#f7f4ee] px-4 py-8 text-center text-sm font-semibold text-[#666056]">
+        © 2026 Roshini Talluru. Built with React, TypeScript, and Tailwind CSS.
       </footer>
 
-      {/* Project Modal */}
-      {selectedProject && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-800 rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="relative">
-              <img 
-                src={selectedProject.image} 
-                alt={selectedProject.title}
-                className="w-full h-64 object-cover rounded-t-2xl"
-              />
-              <button
-                onClick={() => setSelectedProject(null)}
-                className="absolute top-4 right-4 bg-black/50 text-white rounded-full w-10 h-10 flex items-center justify-center hover:bg-black/70 transition-colors"
-              >
-                ×
-              </button>
-            </div>
-            <div className="p-8">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-2xl font-bold text-white">{selectedProject.title}</h3>
-                <span className="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">
-                  {selectedProject.category}
-                </span>
+      <AnimatePresence>
+        {selectedProject && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="project-modal-title"
+            onMouseDown={() => setSelectedProject(null)}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 24, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 24, scale: 0.98 }}
+              className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-lg bg-[#fdfbf7] shadow-2xl"
+              onMouseDown={(event) => event.stopPropagation()}
+            >
+              <div className="relative h-72 overflow-hidden bg-[#161616]">
+                <img
+                  src={selectedProject.image}
+                  alt={`${selectedProject.title} project preview`}
+                  className="h-full w-full object-cover"
+                />
+                <button
+                  type="button"
+                  onClick={() => setSelectedProject(null)}
+                  className="absolute right-4 top-4 rounded-lg bg-black/60 p-2 text-white transition hover:bg-black"
+                  aria-label="Close project details"
+                >
+                  <X className="h-5 w-5" />
+                </button>
               </div>
-              <p className="text-gray-300 mb-6 leading-relaxed">
-                {selectedProject.longDescription}
-              </p>
-              <div className="mb-6">
-                <h4 className="text-white font-semibold mb-3">Technologies Used:</h4>
-                <div className="flex flex-wrap gap-2">
+              <div className="p-6 sm:p-8">
+                <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
+                  <div>
+                    <p className="text-sm font-black uppercase text-[#df5a3f]">{selectedProject.eyebrow}</p>
+                    <h3 id="project-modal-title" className="mt-2 text-3xl font-black text-[#161616]">
+                      {selectedProject.title}
+                    </h3>
+                  </div>
+                  <span className="w-fit rounded-lg bg-[#161616] px-3 py-2 text-xs font-black uppercase text-white">
+                    {selectedProject.category}
+                  </span>
+                </div>
+                <p className="mt-5 text-base leading-8 text-[#4c4740]">{selectedProject.longDescription}</p>
+                <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                  <div className="rounded-lg border border-[#138f8a]/20 bg-[#e4f4f2] p-4">
+                    <p className="text-xs font-black uppercase text-[#0c6d69]">Outcome</p>
+                    <p className="mt-2 text-sm font-bold leading-6 text-[#184743]">{selectedProject.impact}</p>
+                  </div>
+                  <div className="rounded-lg border border-black/10 bg-white p-4">
+                    <p className="text-xs font-black uppercase text-[#7d5840]">Role</p>
+                    <p className="mt-2 text-sm font-bold leading-6 text-[#3c3731]">{selectedProject.role}</p>
+                  </div>
+                </div>
+                <div className="mt-6 flex flex-wrap gap-2">
                   {selectedProject.technologies.map((tech) => (
-                    <span key={tech} className="bg-purple-600/20 text-purple-300 px-3 py-1 rounded-full text-sm">
+                    <span key={tech} className="rounded-lg bg-[#f2ede4] px-3 py-2 text-xs font-bold text-[#4c4740]">
                       {tech}
                     </span>
                   ))}
                 </div>
+                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                  <a
+                    href={selectedProject.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#161616] px-5 py-3 text-sm font-black text-white transition hover:bg-[#33302a]"
+                  >
+                    <Github className="h-4 w-4" />
+                    View Code
+                    <ExternalLink className="h-4 w-4" />
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedProject(null)}
+                    className="rounded-lg border border-black/10 px-5 py-3 text-sm font-black text-[#161616] transition hover:bg-black/5"
+                  >
+                    Close
+                  </button>
+                </div>
               </div>
-              <div className="flex space-x-4">
-                <a
-                  href={selectedProject.github}
-                  className="flex items-center space-x-2 bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors"
-                >
-                  <Github className="w-4 h-4" />
-                  <span>View Code</span>
-                </a>
-                <button
-                  onClick={() => setSelectedProject(null)}
-                  className="px-6 py-3 border border-gray-600 text-gray-300 rounded-lg hover:bg-gray-700 transition-colors"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
 
-export default App; 
+function SectionHeader({
+  title,
+  id,
+  align = 'center',
+  inverted = false,
+}: {
+  title: string;
+  id: string;
+  align?: 'left' | 'center';
+  inverted?: boolean;
+}) {
+  return (
+    <div className={align === 'center' ? 'mx-auto mb-10 max-w-3xl text-center' : 'max-w-3xl'}>
+      <p className={`text-sm font-black uppercase ${inverted ? 'text-[#f4c542]' : 'text-[#df5a3f]'}`}>
+        {sectionEyebrows[id]}
+      </p>
+      <h2 className={`mt-3 text-4xl font-black leading-tight sm:text-5xl ${inverted ? 'text-white' : 'text-[#161616]'}`}>
+        {title}
+      </h2>
+    </div>
+  );
+}
+
+function SegmentedControl({
+  items,
+  activeItem,
+  onChange,
+  label,
+  inverted = false,
+}: {
+  items: string[];
+  activeItem: string;
+  onChange: (item: string) => void;
+  label: string;
+  inverted?: boolean;
+}) {
+  return (
+    <div
+      className={`flex max-w-full flex-wrap gap-2 rounded-lg border p-2 ${
+        inverted ? 'border-white/10 bg-white/[0.06]' : 'border-black/10 bg-white'
+      }`}
+      role="group"
+      aria-label={label}
+    >
+      {items.map((item) => (
+        <button
+          key={item}
+          type="button"
+          onClick={() => onChange(item)}
+          className={`rounded-lg px-3 py-2 text-sm font-black transition ${
+            activeItem === item
+              ? inverted
+                ? 'bg-[#f4c542] text-[#161616]'
+                : 'bg-[#161616] text-white'
+              : inverted
+                ? 'text-[#ddd4c6] hover:bg-white/10 hover:text-white'
+                : 'text-[#4c4740] hover:bg-black/5 hover:text-[#161616]'
+          }`}
+        >
+          {item}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function EducationCard({
+  degree,
+  school,
+  period,
+  details,
+}: {
+  degree: string;
+  school: string;
+  period: string;
+  details: string[];
+}) {
+  return (
+    <article className="rounded-lg border border-black/10 bg-white p-6 shadow-sm">
+      <div className="flex items-center gap-3 text-sm font-black uppercase text-[#df5a3f]">
+        <CalendarDays className="h-4 w-4" />
+        {period}
+      </div>
+      <h3 className="mt-5 text-2xl font-black text-[#161616]">{degree}</h3>
+      <p className="mt-1 font-bold text-[#138f8a]">{school}</p>
+      <ul className="mt-5 space-y-3">
+        {details.map((detail) => (
+          <li key={detail} className="flex gap-3 text-sm leading-6 text-[#4c4740]">
+            <Star className="mt-1 h-4 w-4 shrink-0 text-[#df5a3f]" />
+            <span>{detail}</span>
+          </li>
+        ))}
+      </ul>
+    </article>
+  );
+}
+
+function RecognitionCard({
+  icon: Icon,
+  title,
+  items,
+}: {
+  icon: LucideIcon;
+  title: string;
+  items: string[];
+}) {
+  return (
+    <article className="rounded-lg border border-black/10 bg-[#fdfbf7] p-6 shadow-sm">
+      <div className="flex items-center gap-3">
+        <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-[#161616] text-[#f4c542]">
+          <Icon className="h-5 w-5" />
+        </span>
+        <h3 className="text-xl font-black text-[#161616]">{title}</h3>
+      </div>
+      <ul className="mt-6 space-y-3">
+        {items.map((item) => (
+          <li key={item} className="flex gap-3 text-sm leading-6 text-[#4c4740]">
+            <Star className="mt-1 h-4 w-4 shrink-0 text-[#df5a3f]" />
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
+    </article>
+  );
+}
+
+export default App;
