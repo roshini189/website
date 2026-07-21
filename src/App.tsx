@@ -4,6 +4,7 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { AnimatePresence, motion, useScroll, useSpring } from 'framer-motion';
 import type { LucideIcon } from 'lucide-react';
 import {
+  Activity,
   ArrowRight,
   Award,
   BarChart3,
@@ -15,9 +16,11 @@ import {
   Database,
   ExternalLink,
   FileText,
+  Gauge,
   Github,
   GitBranch,
   Globe2,
+  Layers3,
   Linkedin,
   Mail,
   MapPin,
@@ -74,12 +77,21 @@ interface AudienceMode {
   stats: string[];
 }
 
+interface MissionSignal {
+  label: string;
+  value: string;
+  detail: string;
+  progress: number;
+  color: string;
+  icon: LucideIcon;
+}
+
 const navItems = ['home', 'about', 'experience', 'projects', 'skills', 'education', 'awards', 'contact'];
 
 const sectionEyebrows: Record<string, string> = {
   about: 'Interactive proof',
   experience: 'Expandable timeline',
-  projects: 'Project lab',
+  projects: 'Mission workbench',
   skills: 'Capability map',
   education: 'Academic foundation',
   awards: 'Signals',
@@ -87,34 +99,102 @@ const sectionEyebrows: Record<string, string> = {
 };
 
 const rotatingRoles = [
-  'AI platform engineer',
-  'full-stack systems builder',
+  'mission-grade software engineer',
+  'Java / Go full-stack builder',
   'cloud-native product engineer',
-  'data-driven problem solver',
+  'AI systems engineer',
 ];
 
 const audienceModes: AudienceMode[] = [
   {
     id: 'recruiter',
     label: 'Recruiter scan',
-    title: 'Fast path to fit',
-    proof: 'Clear outcomes, enterprise scope, resume access, and focused project evidence in the first few scrolls.',
-    stats: ['5+ years', '30+ clients', '60% faster PRs'],
+    title: 'High-signal candidate fit',
+    proof: 'Outcome-led projects, enterprise delivery, strong backend depth, AI tooling, and direct resume/contact paths without fluff.',
+    stats: ['5+ years', '30+ clients', 'Texas'],
   },
   {
     id: 'engineering',
     label: 'Engineering depth',
-    title: 'Systems that survive scale',
-    proof: 'Spring Boot, GraphQL, Kafka, Kubernetes, observability, secure auth, and reusable platform patterns.',
-    stats: ['Kafka APIs', 'GraphQL', 'K8s/Helm'],
+    title: 'Full-stack systems under pressure',
+    proof: 'Java/Spring Boot, Go services, React, Angular, GraphQL, Kafka, Kubernetes, observability, secure auth, and reusable platform patterns.',
+    stats: ['Java + Go', 'GraphQL/Kafka', 'K8s/Helm'],
   },
   {
     id: 'ai',
     label: 'AI/data signal',
-    title: 'Applied AI, not buzzwords',
-    proof: 'RAG apps, ML pipelines, NLP flows, developer agents, model evaluation, and practical data products.',
+    title: 'Applied AI with production instincts',
+    proof: 'RAG apps, ML pipelines, NLP flows, developer agents, model evaluation, and practical data products built around usable workflows.',
     stats: ['RAG/LLM', 'NLP', 'ML models'],
   },
+];
+
+const missionMetrics = [
+  { label: 'Backend thrust', value: 'Java + Go + Spring', tone: 'text-[#f4c542]' },
+  { label: 'Frontend guidance', value: 'React + Angular', tone: 'text-[#72d8cf]' },
+  { label: 'Flight software style', value: 'observable APIs', tone: 'text-[#ff9d7e]' },
+  { label: 'Mission base', value: 'Texas', tone: 'text-white' },
+];
+
+const fullStackOverview = [
+  {
+    label: 'Backend systems',
+    detail: 'Java, Spring Boot, Go microservices, Node.js, GraphQL, REST, Kafka, JPA/Hibernate.',
+  },
+  {
+    label: 'Frontend products',
+    detail: 'React, Next.js, Angular, TypeScript, reusable UI systems, dashboards, and workflow surfaces.',
+  },
+  {
+    label: 'Cloud and delivery',
+    detail: 'AWS, Azure, Docker, Kubernetes, Helm, Terraform, Jenkins, CI/CD, rollback-aware releases.',
+  },
+  {
+    label: 'Data and intelligence',
+    detail: 'PostgreSQL, MongoDB, Azure SQL, MySQL, Redis, RAG, ML pipelines, NLP, model evaluation.',
+  },
+];
+
+const missionSignals: MissionSignal[] = [
+  {
+    label: 'Architecture',
+    value: 'Java + Go services',
+    detail: 'Spring Boot, Go microservices, GraphQL, REST, Kafka, and observable API design.',
+    progress: 92,
+    color: '#f4c542',
+    icon: Server,
+  },
+  {
+    label: 'Product UX',
+    value: 'React + Angular',
+    detail: 'Recruiter-fast scan paths, dense dashboards, reusable components, and polished workflows.',
+    progress: 90,
+    color: '#72d8cf',
+    icon: Layers3,
+  },
+  {
+    label: 'AI Payload',
+    value: 'RAG + ML agents',
+    detail: 'RAG apps, NLP pipelines, model evaluation, MCP tooling, and useful AI automation.',
+    progress: 88,
+    color: '#ff9d7e',
+    icon: Brain,
+  },
+  {
+    label: 'Delivery',
+    value: 'Cloud + CI/CD',
+    detail: 'AWS, Azure, Docker, Kubernetes, Helm, Terraform, Jenkins, and release discipline.',
+    progress: 86,
+    color: '#d7f76b',
+    icon: Gauge,
+  },
+];
+
+const commandLines = [
+  'INIT recruiter brief: outcomes first',
+  'VERIFY stack depth: Java, Go, React, Angular',
+  'LOCK AI signal: RAG, ML, MCP agents',
+  'CONFIRM operating base: Texas',
 ];
 
 function App() {
@@ -127,6 +207,7 @@ function App() {
   const [activeSkillCategory, setActiveSkillCategory] = useState('All');
   const [activeAudienceId, setActiveAudienceId] = useState('recruiter');
   const [activeProjectId, setActiveProjectId] = useState(1);
+  const [activeSignalIndex, setActiveSignalIndex] = useState(0);
   const [expandedExperience, setExpandedExperience] = useState(0);
   const [roleIndex, setRoleIndex] = useState(0);
   const [spotlight, setSpotlight] = useState({ x: 50, y: 50 });
@@ -230,11 +311,13 @@ function App() {
     { name: 'Python', level: 95, icon: Code2, category: 'Languages' },
     { name: 'JavaScript / TypeScript', level: 90, icon: Code2, category: 'Languages' },
     { name: 'Java', level: 88, icon: Code2, category: 'Languages' },
+    { name: 'Go', level: 82, icon: Code2, category: 'Languages' },
     { name: 'R', level: 88, icon: Code2, category: 'Languages' },
     { name: 'React / Next.js', level: 92, icon: Globe2, category: 'Frontend' },
     { name: 'Angular', level: 90, icon: Globe2, category: 'Frontend' },
     { name: 'HTML / CSS / SCSS', level: 92, icon: Globe2, category: 'Frontend' },
-    { name: 'Spring Boot', level: 90, icon: Server, category: 'Backend' },
+    { name: 'Java / Spring Boot', level: 90, icon: Server, category: 'Backend' },
+    { name: 'Go Microservices', level: 82, icon: Server, category: 'Backend' },
     { name: 'Node.js / Express', level: 88, icon: Server, category: 'Backend' },
     { name: 'GraphQL', level: 85, icon: Server, category: 'Backend' },
     { name: 'Kafka', level: 85, icon: Server, category: 'Backend' },
@@ -331,6 +414,13 @@ function App() {
   }, []);
 
   useEffect(() => {
+    const timer = window.setInterval(() => {
+      setActiveSignalIndex((current) => (current + 1) % missionSignals.length);
+    }, 1900);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 24);
       const current = navItems.find((section) => {
@@ -370,10 +460,13 @@ function App() {
 
   const runRecruiterTour = () => {
     setActiveAudienceId('recruiter');
+    setActiveSignalIndex(0);
     setActiveProjectCategory('All');
     setActiveProjectId(1);
     scrollToSection('projects');
   };
+
+  const activeSignal = missionSignals[activeSignalIndex];
 
   return (
     <div
@@ -407,7 +500,7 @@ function App() {
             </span>
             <span>
               <span className="block text-sm font-black uppercase tracking-[0.24em] text-white">Roshini</span>
-              <span className="block text-xs font-bold text-[#b9c8c0]">Interactive Portfolio</span>
+              <span className="block text-xs font-bold text-[#b9c8c0]">Mission Portfolio</span>
             </span>
           </button>
 
@@ -487,7 +580,7 @@ function App() {
             >
               <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-black text-[#fff3c7] backdrop-blur">
                 <Sparkles className="h-4 w-4" />
-                Available for software engineering roles
+                Mission-ready software engineer
               </div>
               <h1 className="max-w-4xl text-6xl font-black leading-[0.86] tracking-normal sm:text-7xl lg:text-8xl">
                 Roshini Talluru
@@ -507,7 +600,7 @@ function App() {
                 </AnimatePresence>
               </div>
               <p className="mt-6 max-w-2xl text-lg font-medium leading-8 text-[#dfe8e1] sm:text-xl">
-                I build full-stack products, AI tools, healthcare-scale microservices, and data systems that recruiters can evaluate quickly and engineering teams can trust in production.
+                I build full-stack platforms, AI tools, Java/Go services, and data systems with the precision, clarity, and operational discipline expected from teams shipping high-stakes software.
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <button
@@ -516,7 +609,7 @@ function App() {
                   className="interactive-button inline-flex items-center justify-center gap-2 rounded-xl bg-[#f4c542] px-5 py-3 text-sm font-black text-[#08110f] shadow-[0_18px_36px_rgba(244,197,66,0.22)]"
                 >
                   <Rocket className="h-4 w-4" />
-                  Run Recruiter Tour
+                  Launch Recruiter Sequence
                   <ArrowRight className="h-4 w-4" />
                 </button>
                 <button
@@ -525,7 +618,7 @@ function App() {
                   className="interactive-button inline-flex items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/10 px-5 py-3 text-sm font-black text-white backdrop-blur hover:bg-white/15"
                 >
                   <MousePointerClick className="h-4 w-4" />
-                  Open Project Lab
+                  Open Mission Workbench
                 </button>
                 <a
                   href="mailto:roshini_t@outlook.com"
@@ -535,13 +628,26 @@ function App() {
                   Contact
                 </a>
               </div>
+              <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                {missionMetrics.map((metric) => (
+                  <motion.div
+                    key={metric.label}
+                    whileHover={{ y: -4, scale: 1.01 }}
+                    transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+                    className="mission-chip rounded-2xl border border-white/15 bg-white/[0.07] p-4 backdrop-blur"
+                  >
+                    <p className="text-xs font-black uppercase text-[#aebfb7]">{metric.label}</p>
+                    <p className={`mt-2 text-lg font-black ${metric.tone}`}>{metric.value}</p>
+                  </motion.div>
+                ))}
+              </div>
               <button
                 type="button"
                 onClick={() => scrollToSection('about')}
                 className="mt-8 inline-flex items-center gap-2 text-sm font-black text-[#f4c542] transition hover:text-white"
               >
                 <ChevronDown className="h-5 w-5" />
-                Explore proof deck
+                View mission proof
               </button>
             </motion.div>
 
@@ -562,12 +668,12 @@ function App() {
                     <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#08110f] to-transparent p-5">
                       <div className="inline-flex items-center gap-2 rounded-full bg-[#f4c542] px-3 py-2 text-xs font-black text-[#08110f]">
                         <MapPin className="h-3.5 w-3.5" />
-                        Frisco, Texas
+                        Texas
                       </div>
                     </div>
                   </div>
                   <div className="bg-[#0d1714] p-5">
-                    <p className="text-xs font-black uppercase text-[#f4c542]">Choose the hiring lens</p>
+                    <p className="text-xs font-black uppercase text-[#f4c542]">Mission readiness console</p>
                     <div className="mt-4 grid gap-2">
                       {audienceModes.map((mode) => (
                         <button
@@ -607,17 +713,101 @@ function App() {
                   </div>
                 </div>
               </div>
+              <motion.div
+                initial={{ opacity: 0, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.24, ease: 'easeOut' }}
+                className="launch-card rounded-3xl border border-white/15 bg-[#08110f]/82 p-5 shadow-[0_28px_80px_rgba(0,0,0,0.34)] backdrop-blur-xl"
+              >
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-black uppercase text-[#f4c542]">Flight readiness</p>
+                    <h2 className="mt-1 text-2xl font-black text-white">Hire signal telemetry</h2>
+                  </div>
+                  <span className="telemetry-pulse inline-flex items-center gap-2 rounded-full border border-[#72d8cf]/40 bg-[#72d8cf]/10 px-3 py-2 text-xs font-black text-[#bffcf5]">
+                    <Activity className="h-4 w-4" />
+                    Live
+                  </span>
+                </div>
+                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                  {missionSignals.map((signal, index) => {
+                    const Icon = signal.icon;
+                    const isActive = activeSignalIndex === index;
+                    return (
+                      <button
+                        key={signal.label}
+                        type="button"
+                        onClick={() => setActiveSignalIndex(index)}
+                        className={`rounded-2xl border p-4 text-left transition ${
+                          isActive
+                            ? 'border-[#f4c542] bg-white/[0.12] shadow-[0_18px_45px_rgba(244,197,66,0.12)]'
+                            : 'border-white/10 bg-white/[0.055] hover:border-white/25 hover:bg-white/[0.09]'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between gap-3">
+                          <span className="flex items-center gap-2 text-xs font-black uppercase text-[#cfe0d8]">
+                            <Icon className="h-4 w-4" style={{ color: signal.color }} />
+                            {signal.label}
+                          </span>
+                          <span className="text-xs font-black" style={{ color: signal.color }}>
+                            {signal.progress}%
+                          </span>
+                        </div>
+                        <p className="mt-2 text-sm font-black text-white">{signal.value}</p>
+                        <div className="mt-3 h-1.5 rounded-full bg-white/10">
+                          <motion.div
+                            initial={false}
+                            animate={{ width: isActive ? `${signal.progress}%` : `${Math.max(signal.progress - 16, 45)}%` }}
+                            transition={{ duration: 0.42, ease: 'easeOut' }}
+                            className="h-1.5 rounded-full"
+                            style={{ background: signal.color }}
+                          />
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={activeSignal.label}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.24 }}
+                    className="mt-4 rounded-2xl border border-white/10 bg-black/25 p-4"
+                  >
+                    <p className="text-xs font-black uppercase" style={{ color: activeSignal.color }}>
+                      {activeSignal.label} locked
+                    </p>
+                    <p className="mt-2 text-sm font-semibold leading-6 text-[#e8f3ec]">{activeSignal.detail}</p>
+                  </motion.div>
+                </AnimatePresence>
+                <div className="command-feed mt-4 grid gap-2 rounded-2xl border border-white/10 bg-black/35 p-4 font-mono text-xs text-[#bffcf5]">
+                  {commandLines.map((line, index) => (
+                    <motion.div
+                      key={line}
+                      initial={{ opacity: 0, x: -8 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.28, delay: index * 0.08 }}
+                      className="flex gap-3"
+                    >
+                      <span className="text-[#f4c542]">0{index + 1}</span>
+                      <span>{line}</span>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
             </motion.div>
           </div>
         </section>
 
         <section id="about" className="section-shell bg-[#f8f5ef] text-[#08110f]">
-          <SectionHeader title="A portfolio that reacts to what recruiters need to see" id="about" />
+          <SectionHeader title="Mission-grade proof for high-stakes product teams" id="about" />
           <div className="grid gap-5 lg:grid-cols-3">
             <InteractiveProofCard
               icon={Server}
               title="Production Architecture"
-              body="Spring Boot microservices, GraphQL APIs, Kafka event layers, Kubernetes delivery, and observability."
+              body="Java/Spring Boot services, Go microservices, GraphQL APIs, Kafka event layers, Kubernetes delivery, and observability."
               stat="30+ enterprise workflows"
             />
             <InteractiveProofCard
@@ -633,6 +823,33 @@ function App() {
               stat="5,000+ users secured"
             />
           </div>
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ duration: 0.42 }}
+            className="mt-6 rounded-[2rem] border border-black/10 bg-[#08110f] p-5 text-white shadow-[0_24px_70px_rgba(8,17,15,0.18)] sm:p-7"
+          >
+            <div className="grid gap-6 lg:grid-cols-[0.42fr_0.58fr] lg:items-center">
+              <div>
+                <p className="text-sm font-black uppercase text-[#f4c542]">Full-stack overview</p>
+                <h3 className="mt-3 text-4xl font-black leading-tight">
+                  Java, Go, React, Angular, cloud, data, and AI in one delivery loop.
+                </h3>
+                <p className="mt-4 text-sm font-semibold leading-7 text-[#cfe0d8]">
+                  The story is not just frontend polish. It is services, APIs, event streams, secure access, deployment discipline, and product UX moving together.
+                </p>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {fullStackOverview.map((item) => (
+                  <div key={item.label} className="rounded-3xl border border-white/10 bg-white/[0.07] p-4">
+                    <p className="text-xs font-black uppercase text-[#72d8cf]">{item.label}</p>
+                    <p className="mt-2 text-sm font-semibold leading-6 text-[#f4f1e8]">{item.detail}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
         </section>
 
         <section id="experience" className="section-shell bg-[#09100f] text-white">
@@ -692,7 +909,7 @@ function App() {
 
         <section id="projects" className="section-shell bg-[#f8f5ef] text-[#08110f]">
           <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
-            <SectionHeader title="Project lab with live spotlight" id="projects" align="left" />
+            <SectionHeader title="Mission workbench with live impact spotlight" id="projects" align="left" />
             <SegmentedControl
               items={projectCategories}
               activeItem={activeProjectCategory}
@@ -930,7 +1147,7 @@ function App() {
       </main>
 
       <footer className="bg-[#08110f] px-4 py-8 text-center text-sm font-bold text-[#9fb0a8]">
-        &copy; 2026 Roshini Talluru. Interactive portfolio built with React, Three.js, Framer Motion, and Tailwind CSS.
+        &copy; 2026 Roshini Talluru. Mission-control portfolio built with React, Three.js, Framer Motion, and Tailwind CSS.
       </footer>
 
       <AnimatePresence>
@@ -1030,6 +1247,7 @@ function NeuralHero() {
 function NeuralScene() {
   const groupRef = useRef<THREE.Group>(null);
   const meshRef = useRef<THREE.Mesh>(null);
+  const ringRef = useRef<THREE.Group>(null);
   const positions = useMemo(() => {
     const values = new Float32Array(260 * 3);
     for (let index = 0; index < 260; index += 1) {
@@ -1039,6 +1257,22 @@ function NeuralScene() {
       values[index * 3] = radius * Math.sin(phi) * Math.cos(theta);
       values[index * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
       values[index * 3 + 2] = radius * Math.cos(phi);
+    }
+    return values;
+  }, []);
+  const connectionPositions = useMemo(() => {
+    const values = new Float32Array(56 * 6);
+    for (let index = 0; index < 56; index += 1) {
+      const angle = (index / 56) * Math.PI * 2;
+      const nextAngle = angle + 0.34 + ((index % 4) * 0.025);
+      const innerRadius = 1.15 + ((index % 5) * 0.12);
+      const outerRadius = 2.35 + ((index % 7) * 0.09);
+      values[index * 6] = Math.cos(angle) * innerRadius;
+      values[index * 6 + 1] = Math.sin(angle) * innerRadius;
+      values[index * 6 + 2] = Math.sin(index) * 0.26;
+      values[index * 6 + 3] = Math.cos(nextAngle) * outerRadius;
+      values[index * 6 + 4] = Math.sin(nextAngle) * outerRadius;
+      values[index * 6 + 5] = Math.cos(index) * 0.34;
     }
     return values;
   }, []);
@@ -1052,16 +1286,44 @@ function NeuralScene() {
       meshRef.current.rotation.x = state.clock.elapsedTime * 0.18;
       meshRef.current.rotation.y = state.clock.elapsedTime * 0.22;
     }
+    if (ringRef.current) {
+      ringRef.current.rotation.z = state.clock.elapsedTime * 0.2;
+      ringRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.22) * 0.16;
+    }
   });
 
   return (
     <group ref={groupRef}>
+      <lineSegments>
+        <bufferGeometry>
+          <bufferAttribute attach="attributes-position" args={[connectionPositions, 3]} />
+        </bufferGeometry>
+        <lineBasicMaterial color="#72d8cf" transparent opacity={0.18} />
+      </lineSegments>
       <points>
         <bufferGeometry>
           <bufferAttribute attach="attributes-position" args={[positions, 3]} />
         </bufferGeometry>
         <pointsMaterial color="#f4c542" size={0.055} transparent opacity={0.84} sizeAttenuation />
       </points>
+      <group ref={ringRef} position={[0.82, 0.02, -1.35]} rotation={[0.64, -0.34, 0.1]}>
+        <mesh>
+          <torusGeometry args={[1.72, 0.012, 12, 160]} />
+          <meshBasicMaterial color="#f4c542" transparent opacity={0.42} />
+        </mesh>
+        <mesh rotation={[Math.PI / 2, 0.22, 0]}>
+          <torusGeometry args={[2.18, 0.008, 12, 160]} />
+          <meshBasicMaterial color="#72d8cf" transparent opacity={0.22} />
+        </mesh>
+        <mesh position={[1.72, 0, 0]}>
+          <sphereGeometry args={[0.07, 18, 18]} />
+          <meshBasicMaterial color="#f4c542" />
+        </mesh>
+      </group>
+      <mesh position={[0.18, -0.08, -1.82]}>
+        <sphereGeometry args={[0.42, 32, 32]} />
+        <meshStandardMaterial color="#f4c542" transparent opacity={0.2} emissive="#f4c542" emissiveIntensity={0.18} />
+      </mesh>
       <mesh ref={meshRef} position={[2.15, 0.3, -0.8]}>
         <torusKnotGeometry args={[0.95, 0.18, 130, 12]} />
         <meshStandardMaterial color="#24b8ad" wireframe transparent opacity={0.28} />
