@@ -1,3 +1,153 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  color-scheme: light;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #f8f5ef;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background:
+    radial-gradient(circle at 15% 10%, rgba(244, 197, 66, 0.18), transparent 28rem),
+    radial-gradient(circle at 85% 5%, rgba(19, 143, 138, 0.16), transparent 26rem),
+    #f8f5ef;
+}
+
+body::selection {
+  background: #f4c542;
+  color: #161616;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid #f4c542;
+  outline-offset: 3px;
+}
+
+img {
+  display: block;
+}
+
+@layer components {
+  .section-shell {
+    @apply px-4 py-20 sm:px-6 lg:px-8;
+  }
+
+  .section-shell > * {
+    @apply mx-auto max-w-7xl;
+  }
+}
+
+.pattern-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: linear-gradient(to bottom, #000 0%, transparent 85%);
+}
+
+.ambient-sweep {
+  background:
+    linear-gradient(115deg, transparent 0%, rgba(244, 197, 66, 0.08) 34%, transparent 55%),
+    linear-gradient(65deg, transparent 0%, rgba(15, 118, 110, 0.1) 45%, transparent 72%);
+  background-size: 180% 180%;
+  animation: ambient-sweep 11s ease-in-out infinite alternate;
+}
+
+.interactive-panel {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition:
+    border-color 220ms ease,
+    box-shadow 220ms ease,
+    transform 220ms ease,
+    background-color 220ms ease;
+}
+
+.interactive-panel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(120deg, transparent 20%, rgba(255, 255, 255, 0.2) 45%, transparent 70%);
+  opacity: 0;
+  transform: translateX(-45%);
+  transition:
+    opacity 300ms ease,
+    transform 700ms ease;
+}
+
+.interactive-panel > * {
+  position: relative;
+  z-index: 1;
+}
+
+.interactive-panel:hover::after {
+  opacity: 1;
+  transform: translateX(45%);
+}
+
+.interactive-button {
+  transform: translateY(0);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease,
+    color 180ms ease;
+}
+
+.interactive-button:hover {
+  transform: translateY(-2px);
+}
+
+.hero-portrait img {
+  transition:
+    transform 650ms ease,
+    filter 650ms ease;
+}
+
+.hero-portrait:hover img {
+  filter: saturate(1.06) contrast(1.03);
+  transform: scale(1.025);
+}
+
+@keyframes ambient-sweep {
+  from {
+    background-position: 0% 45%;
+  }
+
+  to {
+    background-position: 100% 55%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
