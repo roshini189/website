@@ -1,24 +1,31 @@
 import { useEffect, useMemo, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion, useScroll, useSpring } from 'framer-motion';
 import type { LucideIcon } from 'lucide-react';
 import {
+  ArrowRight,
   Award,
   BarChart3,
   Brain,
   Briefcase,
   CalendarDays,
+  CheckCircle2,
+  ClipboardCheck,
   ChevronDown,
   Code2,
   Database,
+  Eye,
   ExternalLink,
   FileText,
   Github,
   GitBranch,
   Globe2,
+  Layers3,
   Linkedin,
   Mail,
   MapPin,
   Menu,
+  MousePointerClick,
+  Rocket,
   Server,
   ShieldCheck,
   Sparkles,
@@ -77,6 +84,8 @@ function App() {
   const [activeProjectCategory, setActiveProjectCategory] = useState('All');
   const [activeSkillCategory, setActiveSkillCategory] = useState('All');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { scrollYProgress } = useScroll();
+  const scrollProgress = useSpring(scrollYProgress, { stiffness: 90, damping: 26, restDelta: 0.001 });
 
   const projects = useMemo<Project[]>(() => [
     {
@@ -326,13 +335,27 @@ function App() {
     { icon: BarChart3, label: 'Data and ML systems', detail: 'Regression, NLP, dashboards, model evaluation' },
     { icon: ShieldCheck, label: 'Secure product delivery', detail: 'OAuth, JWT, encrypted transactions, healthcare scale' },
   ];
+  const recruiterShortcuts = [
+    { icon: Eye, label: 'Scan projects', detail: 'Outcome-first case studies', target: 'projects' },
+    { icon: ClipboardCheck, label: 'Review experience', detail: 'Enterprise delivery signals', target: 'experience' },
+    { icon: MousePointerClick, label: 'Start contact', detail: 'Email, LinkedIn, resume', target: 'contact' },
+  ];
+  const proofPoints = [
+    { icon: CheckCircle2, label: 'Production systems', detail: 'Healthcare, university, commerce, and data platforms.' },
+    { icon: Layers3, label: 'End-to-end range', detail: 'Frontend, backend, cloud, observability, AI, and analytics.' },
+    { icon: Rocket, label: 'Hiring signal', detail: 'Clear outcomes, business impact, and modern engineering judgment.' },
+  ];
 
   return (
-    <div className="min-h-screen bg-[#f7f4ee] text-[#161616]">
+    <div className="min-h-screen bg-[#f8f5ef] text-[#161616]">
+      <motion.div
+        className="fixed left-0 top-0 z-[70] h-1 w-full origin-left bg-gradient-to-r from-[#c2412d] via-[#f4c542] to-[#0f766e]"
+        style={{ scaleX: scrollProgress }}
+      />
       <nav
         className={`fixed top-0 z-50 w-full border-b transition-all duration-300 ${
           isScrolled
-            ? 'border-black/10 bg-[#f7f4ee]/90 shadow-[0_12px_40px_rgba(22,22,22,0.08)] backdrop-blur-xl'
+            ? 'border-black/10 bg-[#f8f5ef]/90 shadow-[0_12px_40px_rgba(22,22,22,0.08)] backdrop-blur-xl'
             : 'border-transparent bg-transparent'
         }`}
       >
@@ -343,14 +366,24 @@ function App() {
             className="group flex items-center gap-3 text-left"
             aria-label="Go to home"
           >
-            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#161616] text-sm font-black text-[#f7f4ee]">
+            <span
+              className={`flex h-10 w-10 items-center justify-center rounded-lg text-sm font-black transition ${
+                isScrolled ? 'bg-[#161616] text-[#f8f5ef]' : 'bg-white text-[#161616]'
+              }`}
+            >
               RT
             </span>
             <span>
-              <span className="block text-sm font-black uppercase tracking-[0.24em] text-[#161616]">
+              <span
+                className={`block text-sm font-black uppercase tracking-[0.24em] transition ${
+                  isScrolled ? 'text-[#161616]' : 'text-white'
+                }`}
+              >
                 Roshini
               </span>
-              <span className="block text-xs font-semibold text-[#666056]">Software Engineer</span>
+              <span className={`block text-xs font-semibold transition ${isScrolled ? 'text-[#5b554c]' : 'text-[#efe4d3]'}`}>
+                Software Engineer
+              </span>
             </span>
           </button>
 
@@ -362,8 +395,12 @@ function App() {
                 onClick={() => scrollToSection(item)}
                 className={`rounded-lg px-3 py-2 text-sm font-semibold capitalize transition ${
                   activeSection === item
-                    ? 'bg-[#161616] text-white'
-                    : 'text-[#4c4740] hover:bg-black/5 hover:text-[#161616]'
+                    ? isScrolled
+                      ? 'bg-[#161616] text-white'
+                      : 'bg-white text-[#161616]'
+                    : isScrolled
+                      ? 'text-[#3f3932] hover:bg-black/5 hover:text-[#161616]'
+                      : 'text-[#f0e7d8] hover:bg-white/10 hover:text-white'
                 }`}
               >
                 {item}
@@ -376,7 +413,7 @@ function App() {
               href={`${baseUrl}images/Roshini_Talluru_Resume.pdf`}
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden items-center gap-2 rounded-lg bg-[#df5a3f] px-4 py-2 text-sm font-bold text-white shadow-[0_10px_24px_rgba(223,90,63,0.24)] transition hover:bg-[#c94a32] sm:flex"
+              className="hidden items-center gap-2 rounded-lg bg-[#c2412d] px-4 py-2 text-sm font-bold text-white shadow-[0_10px_24px_rgba(194,65,45,0.28)] transition hover:-translate-y-0.5 hover:bg-[#a93625] sm:flex"
             >
               <FileText className="h-4 w-4" />
               Resume
@@ -384,7 +421,9 @@ function App() {
             <button
               type="button"
               onClick={() => setIsMenuOpen((value) => !value)}
-              className="rounded-lg border border-black/10 p-2 text-[#161616] lg:hidden"
+              className={`rounded-lg border p-2 transition lg:hidden ${
+                isScrolled ? 'border-black/10 text-[#161616]' : 'border-white/20 text-white'
+              }`}
               aria-label="Toggle navigation"
               aria-expanded={isMenuOpen}
             >
@@ -399,7 +438,7 @@ function App() {
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="overflow-hidden border-t border-black/10 bg-[#f7f4ee] lg:hidden"
+              className="overflow-hidden border-t border-black/10 bg-[#f8f5ef] lg:hidden"
             >
               <div className="grid gap-1 px-4 py-4">
                 {navItems.map((item) => (
@@ -419,9 +458,10 @@ function App() {
       </nav>
 
       <main>
-        <section id="home" className="relative min-h-screen overflow-hidden pt-28">
-          <div className="absolute inset-x-0 top-0 h-[58%] bg-[#161616]" />
-          <div className="absolute inset-x-0 top-0 h-[58%] pattern-grid opacity-35" />
+        <section id="home" className="relative min-h-screen overflow-hidden bg-[#141414] pt-28">
+          <div className="absolute inset-0 bg-[#141414]" />
+          <div className="absolute inset-0 pattern-grid opacity-35" />
+          <div className="ambient-sweep absolute inset-0 opacity-70" />
           <div className="relative mx-auto grid min-h-[calc(100vh-7rem)] max-w-7xl items-center gap-10 px-4 pb-12 sm:px-6 lg:grid-cols-[1.08fr_0.92fr] lg:px-8">
             <motion.div
               initial={{ opacity: 0, y: 28 }}
@@ -429,14 +469,14 @@ function App() {
               transition={{ duration: 0.65, ease: 'easeOut' }}
               className="text-white"
             >
-              <div className="mb-6 inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm font-bold text-[#e7d6b7] backdrop-blur">
+              <div className="mb-6 inline-flex items-center gap-2 rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-sm font-bold text-[#fff1c7] shadow-[0_10px_30px_rgba(0,0,0,0.18)] backdrop-blur">
                 <Sparkles className="h-4 w-4" />
                 Full-stack, AI, and cloud-native systems
               </div>
               <h1 className="max-w-4xl text-5xl font-black leading-[0.95] tracking-normal sm:text-6xl lg:text-7xl">
                 Roshini Talluru builds reliable software with an AI systems edge.
               </h1>
-              <p className="mt-6 max-w-2xl text-lg leading-8 text-[#ddd4c6] sm:text-xl">
+              <p className="mt-6 max-w-2xl text-lg leading-8 text-[#f2e8d8] sm:text-xl">
                 Software Engineer in Frisco, Texas, designing healthcare-scale microservices,
                 event pipelines, AI developer tooling, and data products that turn complex
                 workflows into usable systems.
@@ -445,23 +485,53 @@ function App() {
                 <button
                   type="button"
                   onClick={() => scrollToSection('projects')}
-                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#f4c542] px-5 py-3 text-sm font-black text-[#161616] transition hover:bg-[#f1b91f]"
+                  className="interactive-button inline-flex items-center justify-center gap-2 rounded-lg bg-[#f4c542] px-5 py-3 text-sm font-black text-[#161616] shadow-[0_16px_34px_rgba(244,197,66,0.24)] transition hover:bg-[#ffd84d]"
                 >
                   <Briefcase className="h-4 w-4" />
                   View Work
+                  <ArrowRight className="h-4 w-4" />
                 </button>
                 <a
                   href="mailto:roshini_t@outlook.com"
-                  className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/20 px-5 py-3 text-sm font-black text-white transition hover:bg-white/10"
+                  className="interactive-button inline-flex items-center justify-center gap-2 rounded-lg border border-white/25 bg-white/[0.03] px-5 py-3 text-sm font-black text-white transition hover:bg-white/[0.12]"
                 >
                   <Mail className="h-4 w-4" />
                   Contact
                 </a>
+                <a
+                  href={`${baseUrl}images/Roshini_Talluru_Resume.pdf`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="interactive-button inline-flex items-center justify-center gap-2 rounded-lg border border-white/25 bg-white px-5 py-3 text-sm font-black text-[#161616] transition hover:bg-[#fff1c7]"
+                >
+                  <FileText className="h-4 w-4" />
+                  Resume
+                </a>
+              </div>
+              <div className="mt-6 grid gap-3 sm:grid-cols-3">
+                {recruiterShortcuts.map((shortcut) => {
+                  const Icon = shortcut.icon;
+                  return (
+                    <button
+                      key={shortcut.label}
+                      type="button"
+                      onClick={() => scrollToSection(shortcut.target)}
+                      className="interactive-panel group rounded-lg border border-white/20 bg-white/[0.1] p-4 text-left backdrop-blur transition hover:border-[#f4c542]/70 hover:bg-white/[0.15]"
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <Icon className="h-5 w-5 text-[#f4c542]" />
+                        <ArrowRight className="h-4 w-4 text-[#f2e8d8] transition group-hover:translate-x-1 group-hover:text-white" />
+                      </div>
+                      <p className="mt-3 text-sm font-black text-white">{shortcut.label}</p>
+                      <p className="mt-1 text-xs font-semibold leading-5 text-[#f2e8d8]">{shortcut.detail}</p>
+                    </button>
+                  );
+                })}
               </div>
               <button
                 type="button"
                 onClick={() => scrollToSection('about')}
-                className="mt-10 inline-flex items-center gap-2 text-sm font-bold text-[#e7d6b7] transition hover:text-white"
+                className="mt-10 inline-flex items-center gap-2 text-sm font-black text-[#f4c542] transition hover:text-white"
               >
                 <ChevronDown className="h-5 w-5" />
                 Explore profile
@@ -474,19 +544,22 @@ function App() {
               transition={{ duration: 0.65, delay: 0.1, ease: 'easeOut' }}
               className="relative"
             >
-              <div className="relative overflow-hidden rounded-lg border border-white/15 bg-[#24211d] shadow-[0_30px_80px_rgba(0,0,0,0.34)]">
+              <div className="hero-portrait interactive-panel relative overflow-hidden rounded-lg border border-white/20 bg-[#24211d] shadow-[0_30px_80px_rgba(0,0,0,0.34)]">
                 <img
                   src={`${baseUrl}images/bio.jpeg`}
                   alt="Roshini Talluru"
                   className="h-[520px] w-full object-cover object-center saturate-[0.96]"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#161616] via-transparent to-transparent" />
+                <div className="absolute left-5 top-5 rounded-lg border border-white/20 bg-black/45 px-3 py-2 text-xs font-black uppercase text-white backdrop-blur">
+                  Ready for recruiter scan
+                </div>
                 <div className="absolute bottom-0 left-0 right-0 p-6">
                   <div className="grid grid-cols-2 gap-3">
                     {featuredMetrics.map((metric) => (
-                      <div key={metric.label} className="rounded-lg border border-white/15 bg-white/12 p-4 backdrop-blur-md">
+                      <div key={metric.label} className="rounded-lg border border-white/20 bg-black/45 p-4 backdrop-blur-md transition hover:-translate-y-1 hover:bg-black/55">
                         <div className="text-3xl font-black text-white">{metric.value}</div>
-                        <div className="mt-1 text-xs font-semibold leading-5 text-[#e7d6b7]">{metric.label}</div>
+                        <div className="mt-1 text-xs font-bold leading-5 text-[#fff1c7]">{metric.label}</div>
                       </div>
                     ))}
                   </div>
@@ -506,7 +579,7 @@ function App() {
                 className="h-80 w-full object-cover"
               />
               <div className="p-6">
-                <div className="flex items-center gap-2 text-sm font-bold text-[#138f8a]">
+                <div className="flex items-center gap-2 text-sm font-black text-[#0f766e]">
                   <MapPin className="h-4 w-4" />
                   Frisco, Texas
                 </div>
@@ -533,11 +606,33 @@ function App() {
                 {focusAreas.map((area) => {
                   const Icon = area.icon;
                   return (
-                    <div key={area.label} className="rounded-lg border border-black/10 bg-white p-5 shadow-sm">
-                      <Icon className="h-6 w-6 text-[#df5a3f]" />
+                    <motion.div
+                      key={area.label}
+                      whileHover={{ y: -5, scale: 1.01 }}
+                      transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+                      className="interactive-panel rounded-lg border border-black/10 bg-white p-5 shadow-sm"
+                    >
+                      <Icon className="h-6 w-6 text-[#c2412d]" />
                       <h3 className="mt-4 text-lg font-black text-[#161616]">{area.label}</h3>
-                      <p className="mt-2 text-sm leading-6 text-[#666056]">{area.detail}</p>
-                    </div>
+                      <p className="mt-2 text-sm font-medium leading-6 text-[#514a42]">{area.detail}</p>
+                    </motion.div>
+                  );
+                })}
+              </div>
+              <div className="mt-6 grid gap-3 sm:grid-cols-3">
+                {proofPoints.map((point) => {
+                  const Icon = point.icon;
+                  return (
+                    <motion.div
+                      key={point.label}
+                      whileHover={{ y: -4 }}
+                      transition={{ type: 'spring', stiffness: 260, damping: 22 }}
+                      className="rounded-lg border border-black/10 bg-[#161616] p-4 text-white shadow-sm"
+                    >
+                      <Icon className="h-5 w-5 text-[#f4c542]" />
+                      <h3 className="mt-3 text-sm font-black">{point.label}</h3>
+                      <p className="mt-2 text-xs font-semibold leading-5 text-[#eee3d3]">{point.detail}</p>
+                    </motion.div>
                   );
                 })}
               </div>
@@ -549,9 +644,11 @@ function App() {
           <SectionHeader title="Enterprise delivery with measurable outcomes" id="experience" />
           <div className="space-y-5">
             {experience.map((exp) => (
-              <article
+              <motion.article
                 key={`${exp.company}-${exp.period}`}
-                className="rounded-lg border border-black/10 bg-[#fdfbf7] p-6 shadow-sm"
+                whileHover={{ y: -4 }}
+                transition={{ type: 'spring', stiffness: 240, damping: 22 }}
+                className="interactive-panel rounded-lg border border-black/10 bg-[#fdfbf7] p-6 shadow-sm"
               >
                 <div className="grid gap-5 lg:grid-cols-[0.32fr_0.68fr]">
                   <div>
@@ -560,19 +657,19 @@ function App() {
                       {exp.period}
                     </div>
                     <h3 className="mt-5 text-2xl font-black text-[#161616]">{exp.title}</h3>
-                    <p className="mt-1 text-base font-bold text-[#138f8a]">{exp.company}</p>
-                    <p className="mt-4 text-sm leading-6 text-[#5c554c]">{exp.description}</p>
+                    <p className="mt-1 text-base font-black text-[#0f766e]">{exp.company}</p>
+                    <p className="mt-4 text-sm font-medium leading-6 text-[#514a42]">{exp.description}</p>
                   </div>
                   <div className="grid gap-3 sm:grid-cols-2">
                     {exp.achievements.map((achievement) => (
-                      <div key={achievement} className="flex gap-3 rounded-lg border border-black/10 bg-white p-4">
-                        <Star className="mt-1 h-4 w-4 shrink-0 text-[#df5a3f]" />
+                      <div key={achievement} className="flex gap-3 rounded-lg border border-black/10 bg-white p-4 transition hover:border-[#f4c542]/70 hover:shadow-sm">
+                        <Star className="mt-1 h-4 w-4 shrink-0 text-[#c2412d]" />
                         <p className="text-sm leading-6 text-[#3c3731]">{achievement}</p>
                       </div>
                     ))}
                   </div>
                 </div>
-              </article>
+              </motion.article>
             ))}
           </div>
         </section>
@@ -588,10 +685,17 @@ function App() {
             />
           </div>
           <div className="mt-10 grid gap-5 lg:grid-cols-3">
+            <AnimatePresence mode="popLayout" initial={false}>
             {filteredProjects.map((project) => (
-              <article
+              <motion.article
                 key={project.id}
-                className="group flex min-h-[520px] flex-col overflow-hidden rounded-lg border border-black/10 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(22,22,22,0.12)]"
+                layout
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -14 }}
+                whileHover={{ y: -7 }}
+                transition={{ type: 'spring', stiffness: 250, damping: 24 }}
+                className="interactive-panel group flex min-h-[520px] flex-col overflow-hidden rounded-lg border border-black/10 bg-white shadow-sm"
               >
                 <div className="relative h-56 overflow-hidden bg-[#161616]">
                   <img
@@ -603,18 +707,22 @@ function App() {
                   <span className="absolute left-4 top-4 rounded-lg bg-[#f4c542] px-3 py-2 text-xs font-black uppercase text-[#161616]">
                     {project.category}
                   </span>
+                  <div className="absolute bottom-4 right-4 flex translate-y-3 items-center gap-2 rounded-lg bg-white px-3 py-2 text-xs font-black text-[#161616] opacity-0 shadow-lg transition group-hover:translate-y-0 group-hover:opacity-100">
+                    Open case study
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </div>
                 </div>
                 <div className="flex flex-1 flex-col p-5">
-                  <p className="text-sm font-black uppercase text-[#df5a3f]">{project.eyebrow}</p>
+                  <p className="text-sm font-black uppercase text-[#c2412d]">{project.eyebrow}</p>
                   <h3 className="mt-2 text-2xl font-black leading-tight text-[#161616]">{project.title}</h3>
-                  <p className="mt-3 text-sm leading-6 text-[#5c554c]">{project.description}</p>
-                  <div className="mt-5 rounded-lg border border-[#138f8a]/20 bg-[#e4f4f2] p-4">
-                    <p className="text-xs font-black uppercase text-[#0c6d69]">Outcome</p>
+                  <p className="mt-3 text-sm font-medium leading-6 text-[#514a42]">{project.description}</p>
+                  <div className="mt-5 rounded-lg border border-[#0f766e]/25 bg-[#e0f2f1] p-4">
+                    <p className="text-xs font-black uppercase text-[#075f5a]">Outcome</p>
                     <p className="mt-1 text-sm font-bold leading-6 text-[#184743]">{project.impact}</p>
                   </div>
                   <div className="mt-5 flex flex-wrap gap-2">
                     {project.technologies.slice(0, 5).map((tech) => (
-                      <span key={tech} className="rounded-lg bg-[#f2ede4] px-2.5 py-1.5 text-xs font-bold text-[#4c4740]">
+                      <span key={tech} className="rounded-lg bg-[#f0eadf] px-2.5 py-1.5 text-xs font-black text-[#3f3932]">
                         {tech}
                       </span>
                     ))}
@@ -623,7 +731,7 @@ function App() {
                     <button
                       type="button"
                       onClick={() => setSelectedProject(project)}
-                      className="inline-flex items-center gap-2 rounded-lg border border-black/10 px-4 py-2 text-sm font-black text-[#161616] transition hover:bg-[#161616] hover:text-white"
+                      className="interactive-button inline-flex items-center gap-2 rounded-lg border border-black/10 px-4 py-2 text-sm font-black text-[#161616] transition hover:bg-[#161616] hover:text-white"
                     >
                       <FileText className="h-4 w-4" />
                       Details
@@ -632,15 +740,16 @@ function App() {
                       href={project.github}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 rounded-lg bg-[#161616] px-4 py-2 text-sm font-black text-white transition hover:bg-[#33302a]"
+                      className="interactive-button inline-flex items-center gap-2 rounded-lg bg-[#161616] px-4 py-2 text-sm font-black text-white transition hover:bg-[#33302a]"
                     >
                       <Github className="h-4 w-4" />
                       Code
                     </a>
                   </div>
                 </div>
-              </article>
+              </motion.article>
             ))}
+            </AnimatePresence>
           </div>
         </section>
 
@@ -659,7 +768,13 @@ function App() {
             {filteredSkills.map((skill) => {
               const Icon = skill.icon;
               return (
-                <div key={skill.name} className="rounded-lg border border-white/10 bg-white/[0.06] p-5">
+                <motion.div
+                  key={skill.name}
+                  layout
+                  whileHover={{ y: -4 }}
+                  transition={{ type: 'spring', stiffness: 260, damping: 24 }}
+                  className="interactive-panel rounded-lg border border-white/10 bg-white/[0.07] p-5"
+                >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex items-center gap-3">
                       <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#f4c542] text-[#161616]">
@@ -667,18 +782,20 @@ function App() {
                       </span>
                       <div>
                         <h3 className="font-black text-white">{skill.name}</h3>
-                        <p className="text-sm font-semibold text-[#b6ad9d]">{skill.category}</p>
+                        <p className="text-sm font-bold text-[#d9cebc]">{skill.category}</p>
                       </div>
                     </div>
                     <span className="text-sm font-black text-[#f4c542]">{skill.level}%</span>
                   </div>
                   <div className="mt-5 h-2 rounded-full bg-white/10">
-                    <div
-                      className="h-2 rounded-full bg-gradient-to-r from-[#df5a3f] via-[#f4c542] to-[#28a39d]"
-                      style={{ width: `${skill.level}%` }}
+                    <motion.div
+                      initial={false}
+                      animate={{ width: `${skill.level}%` }}
+                      transition={{ duration: 0.55, ease: 'easeOut' }}
+                      className="h-2 rounded-full bg-gradient-to-r from-[#c2412d] via-[#f4c542] to-[#0f766e]"
                     />
                   </div>
-                </div>
+                </motion.div>
               );
             })}
           </div>
@@ -740,48 +857,48 @@ function App() {
                 <h2 className="mt-3 max-w-2xl text-4xl font-black leading-tight sm:text-5xl">
                   Let us build something precise, useful, and durable.
                 </h2>
-                <p className="mt-5 max-w-xl text-lg leading-8 text-[#ddd4c6]">
+                <p className="mt-5 max-w-xl text-lg leading-8 text-[#f2e8d8]">
                   Open to software engineering, AI platform, data product, and full-stack opportunities.
                 </p>
               </div>
               <div className="grid gap-3 sm:grid-cols-2">
                 <a
                   href="mailto:roshini_t@outlook.com"
-                  className="rounded-lg border border-white/10 bg-white/[0.06] p-5 transition hover:bg-white/[0.1]"
+                  className="interactive-panel rounded-lg border border-white/10 bg-white/[0.07] p-5 transition hover:-translate-y-1 hover:border-[#f4c542]/60 hover:bg-white/[0.12]"
                 >
                   <Mail className="h-6 w-6 text-[#f4c542]" />
                   <h3 className="mt-4 font-black">Email</h3>
-                  <p className="mt-1 text-sm text-[#ddd4c6]">roshini_t@outlook.com</p>
+                  <p className="mt-1 text-sm font-semibold text-[#f2e8d8]">roshini_t@outlook.com</p>
                 </a>
                 <a
                   href="https://linkedin.com/in/roshinitalluru/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="rounded-lg border border-white/10 bg-white/[0.06] p-5 transition hover:bg-white/[0.1]"
+                  className="interactive-panel rounded-lg border border-white/10 bg-white/[0.07] p-5 transition hover:-translate-y-1 hover:border-[#f4c542]/60 hover:bg-white/[0.12]"
                 >
                   <Linkedin className="h-6 w-6 text-[#f4c542]" />
                   <h3 className="mt-4 font-black">LinkedIn</h3>
-                  <p className="mt-1 text-sm text-[#ddd4c6]">linkedin.com/in/roshinitalluru</p>
+                  <p className="mt-1 text-sm font-semibold text-[#f2e8d8]">linkedin.com/in/roshinitalluru</p>
                 </a>
                 <a
                   href="https://github.com/roshini189"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="rounded-lg border border-white/10 bg-white/[0.06] p-5 transition hover:bg-white/[0.1]"
+                  className="interactive-panel rounded-lg border border-white/10 bg-white/[0.07] p-5 transition hover:-translate-y-1 hover:border-[#f4c542]/60 hover:bg-white/[0.12]"
                 >
                   <Github className="h-6 w-6 text-[#f4c542]" />
                   <h3 className="mt-4 font-black">GitHub</h3>
-                  <p className="mt-1 text-sm text-[#ddd4c6]">github.com/roshini189</p>
+                  <p className="mt-1 text-sm font-semibold text-[#f2e8d8]">github.com/roshini189</p>
                 </a>
                 <a
                   href={`${baseUrl}images/Roshini_Talluru_Resume.pdf`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="rounded-lg border border-white/10 bg-white/[0.06] p-5 transition hover:bg-white/[0.1]"
+                  className="interactive-panel rounded-lg border border-white/10 bg-white/[0.07] p-5 transition hover:-translate-y-1 hover:border-[#f4c542]/60 hover:bg-white/[0.12]"
                 >
                   <FileText className="h-6 w-6 text-[#f4c542]" />
                   <h3 className="mt-4 font-black">Resume</h3>
-                  <p className="mt-1 text-sm text-[#ddd4c6]">Download PDF</p>
+                  <p className="mt-1 text-sm font-semibold text-[#f2e8d8]">Download PDF</p>
                 </a>
               </div>
             </div>
@@ -789,8 +906,8 @@ function App() {
         </section>
       </main>
 
-      <footer className="border-t border-black/10 bg-[#f7f4ee] px-4 py-8 text-center text-sm font-semibold text-[#666056]">
-        © 2026 Roshini Talluru. Built with React, TypeScript, and Tailwind CSS.
+      <footer className="border-t border-black/10 bg-[#f8f5ef] px-4 py-8 text-center text-sm font-bold text-[#514a42]">
+        &copy; 2026 Roshini Talluru. Built with React, TypeScript, and Tailwind CSS.
       </footer>
 
       <AnimatePresence>
@@ -830,7 +947,7 @@ function App() {
               <div className="p-6 sm:p-8">
                 <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
                   <div>
-                    <p className="text-sm font-black uppercase text-[#df5a3f]">{selectedProject.eyebrow}</p>
+                    <p className="text-sm font-black uppercase text-[#c2412d]">{selectedProject.eyebrow}</p>
                     <h3 id="project-modal-title" className="mt-2 text-3xl font-black text-[#161616]">
                       {selectedProject.title}
                     </h3>
@@ -841,12 +958,12 @@ function App() {
                 </div>
                 <p className="mt-5 text-base leading-8 text-[#4c4740]">{selectedProject.longDescription}</p>
                 <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                  <div className="rounded-lg border border-[#138f8a]/20 bg-[#e4f4f2] p-4">
-                    <p className="text-xs font-black uppercase text-[#0c6d69]">Outcome</p>
+                  <div className="rounded-lg border border-[#0f766e]/25 bg-[#e0f2f1] p-4">
+                    <p className="text-xs font-black uppercase text-[#075f5a]">Outcome</p>
                     <p className="mt-2 text-sm font-bold leading-6 text-[#184743]">{selectedProject.impact}</p>
                   </div>
                   <div className="rounded-lg border border-black/10 bg-white p-4">
-                    <p className="text-xs font-black uppercase text-[#7d5840]">Role</p>
+                    <p className="text-xs font-black uppercase text-[#6b442d]">Role</p>
                     <p className="mt-2 text-sm font-bold leading-6 text-[#3c3731]">{selectedProject.role}</p>
                   </div>
                 </div>
@@ -898,7 +1015,7 @@ function SectionHeader({
 }) {
   return (
     <div className={align === 'center' ? 'mx-auto mb-10 max-w-3xl text-center' : 'max-w-3xl'}>
-      <p className={`text-sm font-black uppercase ${inverted ? 'text-[#f4c542]' : 'text-[#df5a3f]'}`}>
+      <p className={`text-sm font-black uppercase ${inverted ? 'text-[#f4c542]' : 'text-[#c2412d]'}`}>
         {sectionEyebrows[id]}
       </p>
       <h2 className={`mt-3 text-4xl font-black leading-tight sm:text-5xl ${inverted ? 'text-white' : 'text-[#161616]'}`}>
@@ -940,7 +1057,7 @@ function SegmentedControl({
                 ? 'bg-[#f4c542] text-[#161616]'
                 : 'bg-[#161616] text-white'
               : inverted
-                ? 'text-[#ddd4c6] hover:bg-white/10 hover:text-white'
+                ? 'text-[#f2e8d8] hover:bg-white/10 hover:text-white'
                 : 'text-[#4c4740] hover:bg-black/5 hover:text-[#161616]'
           }`}
         >
@@ -964,16 +1081,16 @@ function EducationCard({
 }) {
   return (
     <article className="rounded-lg border border-black/10 bg-white p-6 shadow-sm">
-      <div className="flex items-center gap-3 text-sm font-black uppercase text-[#df5a3f]">
+      <div className="flex items-center gap-3 text-sm font-black uppercase text-[#c2412d]">
         <CalendarDays className="h-4 w-4" />
         {period}
       </div>
       <h3 className="mt-5 text-2xl font-black text-[#161616]">{degree}</h3>
-      <p className="mt-1 font-bold text-[#138f8a]">{school}</p>
+      <p className="mt-1 font-black text-[#0f766e]">{school}</p>
       <ul className="mt-5 space-y-3">
         {details.map((detail) => (
           <li key={detail} className="flex gap-3 text-sm leading-6 text-[#4c4740]">
-            <Star className="mt-1 h-4 w-4 shrink-0 text-[#df5a3f]" />
+            <Star className="mt-1 h-4 w-4 shrink-0 text-[#c2412d]" />
             <span>{detail}</span>
           </li>
         ))}
@@ -1002,7 +1119,7 @@ function RecognitionCard({
       <ul className="mt-6 space-y-3">
         {items.map((item) => (
           <li key={item} className="flex gap-3 text-sm leading-6 text-[#4c4740]">
-            <Star className="mt-1 h-4 w-4 shrink-0 text-[#df5a3f]" />
+            <Star className="mt-1 h-4 w-4 shrink-0 text-[#c2412d]" />
             <span>{item}</span>
           </li>
         ))}
