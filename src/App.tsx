@@ -77,7 +77,7 @@ interface AudienceMode {
   stats: string[];
 }
 
-interface MissionSignal {
+interface HiringHighlight {
   label: string;
   value: string;
   detail: string;
@@ -91,15 +91,15 @@ const navItems = ['home', 'about', 'experience', 'projects', 'skills', 'educatio
 const sectionEyebrows: Record<string, string> = {
   about: 'Interactive proof',
   experience: 'Expandable timeline',
-  projects: 'Mission workbench',
+  projects: 'Selected work',
   skills: 'Capability map',
   education: 'Academic foundation',
-  awards: 'Signals',
+  awards: 'Recognition',
   contact: 'Hire-ready',
 };
 
 const rotatingRoles = [
-  'mission-grade software engineer',
+  'production-minded software engineer',
   'Java / Go full-stack builder',
   'cloud-native product engineer',
   'AI systems engineer',
@@ -129,11 +129,11 @@ const audienceModes: AudienceMode[] = [
   },
 ];
 
-const missionMetrics = [
-  { label: 'Backend thrust', value: 'Java + Go + Spring', tone: 'text-[#f4c542]' },
-  { label: 'Frontend guidance', value: 'React + Angular', tone: 'text-[#72d8cf]' },
-  { label: 'Flight software style', value: 'observable APIs', tone: 'text-[#ff9d7e]' },
-  { label: 'Mission base', value: 'Texas', tone: 'text-white' },
+const profileMetrics = [
+  { label: 'Backend strength', value: 'Java + Go + Spring', tone: 'text-[#f4c542]' },
+  { label: 'Frontend depth', value: 'React + Angular', tone: 'text-[#72d8cf]' },
+  { label: 'Engineering style', value: 'observable APIs', tone: 'text-[#ff9d7e]' },
+  { label: 'Location', value: 'Texas', tone: 'text-white' },
 ];
 
 const fullStackOverview = [
@@ -155,7 +155,7 @@ const fullStackOverview = [
   },
 ];
 
-const missionSignals: MissionSignal[] = [
+const hiringHighlights: HiringHighlight[] = [
   {
     label: 'Architecture',
     value: 'Java + Go services',
@@ -190,11 +190,11 @@ const missionSignals: MissionSignal[] = [
   },
 ];
 
-const commandLines = [
-  'INIT recruiter brief: outcomes first',
-  'VERIFY stack depth: Java, Go, React, Angular',
-  'LOCK AI signal: RAG, ML, MCP agents',
-  'CONFIRM operating base: Texas',
+const overviewLines = [
+  'Recruiter brief: outcomes first',
+  'Stack depth: Java, Go, React, Angular',
+  'AI experience: RAG, ML, MCP agents',
+  'Location: Texas',
 ];
 
 function App() {
@@ -207,9 +207,11 @@ function App() {
   const [activeSkillCategory, setActiveSkillCategory] = useState('All');
   const [activeAudienceId, setActiveAudienceId] = useState('recruiter');
   const [activeProjectId, setActiveProjectId] = useState(1);
-  const [activeSignalIndex, setActiveSignalIndex] = useState(0);
+  const [activeHighlightIndex, setActiveHighlightIndex] = useState(0);
   const [expandedExperience, setExpandedExperience] = useState(0);
   const [roleIndex, setRoleIndex] = useState(0);
+  const [showWelcome, setShowWelcome] = useState(true);
+  const [welcomeImageReady, setWelcomeImageReady] = useState(false);
   const [spotlight, setSpotlight] = useState({ x: 50, y: 50 });
   const { scrollYProgress } = useScroll();
   const scrollProgress = useSpring(scrollYProgress, { stiffness: 95, damping: 24, restDelta: 0.001 });
@@ -415,10 +417,16 @@ function App() {
 
   useEffect(() => {
     const timer = window.setInterval(() => {
-      setActiveSignalIndex((current) => (current + 1) % missionSignals.length);
+      setActiveHighlightIndex((current) => (current + 1) % hiringHighlights.length);
     }, 1900);
     return () => window.clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    if (!welcomeImageReady) return undefined;
+    const timer = window.setTimeout(() => setShowWelcome(false), 4300);
+    return () => window.clearTimeout(timer);
+  }, [welcomeImageReady]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -460,13 +468,13 @@ function App() {
 
   const runRecruiterTour = () => {
     setActiveAudienceId('recruiter');
-    setActiveSignalIndex(0);
+    setActiveHighlightIndex(0);
     setActiveProjectCategory('All');
     setActiveProjectId(1);
     scrollToSection('projects');
   };
 
-  const activeSignal = missionSignals[activeSignalIndex];
+  const activeHighlight = hiringHighlights[activeHighlightIndex];
 
   return (
     <div
@@ -481,6 +489,75 @@ function App() {
         className="fixed left-0 top-0 z-[80] h-1 w-full origin-left bg-gradient-to-r from-[#ff6b4a] via-[#f4c542] to-[#24b8ad]"
         style={{ scaleX: scrollProgress }}
       />
+      <AnimatePresence>
+        {showWelcome && (
+          <motion.div
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0, y: -18 }}
+            transition={{ duration: 0.55, ease: 'easeInOut' }}
+            className="fixed inset-0 z-[120] flex items-center justify-center bg-[#08110f] px-5"
+            aria-label="Welcome introduction"
+          >
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(244,197,66,0.18),transparent_24rem),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px)] bg-[length:auto,48px_48px,48px_48px]" />
+            <motion.div
+              initial={{ scale: 0.92, y: 24, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.96, y: -22, opacity: 0 }}
+              transition={{ duration: 0.7, ease: 'easeOut' }}
+              className="relative text-center"
+            >
+              <motion.div
+                animate={{ y: [0, -10, 0] }}
+                transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
+                className="mx-auto h-52 w-52 overflow-hidden rounded-full border-4 border-[#f4c542] bg-[#f8f5ef] shadow-[0_0_80px_rgba(244,197,66,0.34)] sm:h-64 sm:w-64"
+              >
+                <img
+                  src={`${baseUrl}images/bio.jpeg`}
+                  alt="Roshini Talluru"
+                  onLoad={() => setWelcomeImageReady(true)}
+                  onError={() => setWelcomeImageReady(true)}
+                  className="h-full w-full object-cover object-center"
+                />
+              </motion.div>
+              <motion.p
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.35, duration: 0.45 }}
+                className="mt-8 text-sm font-black uppercase tracking-[0.28em] text-[#72d8cf]"
+              >
+                Welcome
+              </motion.p>
+              <motion.h1
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.5 }}
+                className="mt-3 text-4xl font-black text-white sm:text-6xl"
+              >
+                Hi, I'm Roshini.
+              </motion.h1>
+              <motion.p
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.68, duration: 0.45 }}
+                className="mx-auto mt-4 max-w-xl text-base font-semibold leading-7 text-[#dfe8e1] sm:text-lg"
+              >
+                Full-stack engineer building clear, useful products with AI, cloud, Java, Go, React, and Angular.
+              </motion.p>
+              <motion.button
+                type="button"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.86, duration: 0.42 }}
+                onClick={() => setShowWelcome(false)}
+                className="interactive-button mt-7 inline-flex items-center gap-2 rounded-xl bg-[#f4c542] px-5 py-3 text-sm font-black text-[#08110f]"
+              >
+                View portfolio
+                <ArrowRight className="h-4 w-4" />
+              </motion.button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <nav
         className={`fixed top-0 z-[70] w-full border-b transition-all duration-300 ${
           isScrolled
@@ -500,7 +577,7 @@ function App() {
             </span>
             <span>
               <span className="block text-sm font-black uppercase tracking-[0.24em] text-white">Roshini</span>
-              <span className="block text-xs font-bold text-[#b9c8c0]">Mission Portfolio</span>
+              <span className="block text-xs font-bold text-[#b9c8c0]">Full-Stack Portfolio</span>
             </span>
           </button>
 
@@ -580,24 +657,21 @@ function App() {
             >
               <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-black text-[#fff3c7] backdrop-blur">
                 <Sparkles className="h-4 w-4" />
-                Mission-ready software engineer
+                Available for software engineering roles
               </div>
               <h1 className="max-w-4xl text-6xl font-black leading-[0.86] tracking-normal sm:text-7xl lg:text-8xl">
                 Roshini Talluru
               </h1>
-              <div className="mt-5 h-10 overflow-hidden text-2xl font-black text-[#f4c542] sm:text-3xl">
-                <AnimatePresence mode="wait">
-                  <motion.span
-                    key={rotatingRoles[roleIndex]}
-                    initial={{ y: 26, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    exit={{ y: -26, opacity: 0 }}
-                    transition={{ duration: 0.38 }}
-                    className="block"
-                  >
-                    {rotatingRoles[roleIndex]}
-                  </motion.span>
-                </AnimatePresence>
+              <div className="mt-5 min-h-[4.25rem] overflow-hidden text-2xl font-black leading-tight text-[#f4c542] sm:min-h-10 sm:text-3xl">
+                <motion.span
+                  key={rotatingRoles[roleIndex]}
+                  initial={{ y: 16, opacity: 0.45 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ duration: 0.34 }}
+                  className="block"
+                >
+                  {rotatingRoles[roleIndex]}
+                </motion.span>
               </div>
               <p className="mt-6 max-w-2xl text-lg font-medium leading-8 text-[#dfe8e1] sm:text-xl">
                 I build full-stack platforms, AI tools, Java/Go services, and data systems with the precision, clarity, and operational discipline expected from teams shipping high-stakes software.
@@ -609,7 +683,7 @@ function App() {
                   className="interactive-button inline-flex items-center justify-center gap-2 rounded-xl bg-[#f4c542] px-5 py-3 text-sm font-black text-[#08110f] shadow-[0_18px_36px_rgba(244,197,66,0.22)]"
                 >
                   <Rocket className="h-4 w-4" />
-                  Launch Recruiter Sequence
+                  Start Recruiter View
                   <ArrowRight className="h-4 w-4" />
                 </button>
                 <button
@@ -618,7 +692,7 @@ function App() {
                   className="interactive-button inline-flex items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/10 px-5 py-3 text-sm font-black text-white backdrop-blur hover:bg-white/15"
                 >
                   <MousePointerClick className="h-4 w-4" />
-                  Open Mission Workbench
+                  Explore Projects
                 </button>
                 <a
                   href="mailto:roshini_t@outlook.com"
@@ -629,12 +703,12 @@ function App() {
                 </a>
               </div>
               <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                {missionMetrics.map((metric) => (
+                {profileMetrics.map((metric) => (
                   <motion.div
                     key={metric.label}
                     whileHover={{ y: -4, scale: 1.01 }}
                     transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-                    className="mission-chip rounded-2xl border border-white/15 bg-white/[0.07] p-4 backdrop-blur"
+                    className="profile-chip rounded-2xl border border-white/15 bg-white/[0.07] p-4 backdrop-blur"
                   >
                     <p className="text-xs font-black uppercase text-[#aebfb7]">{metric.label}</p>
                     <p className={`mt-2 text-lg font-black ${metric.tone}`}>{metric.value}</p>
@@ -647,7 +721,7 @@ function App() {
                 className="mt-8 inline-flex items-center gap-2 text-sm font-black text-[#f4c542] transition hover:text-white"
               >
                 <ChevronDown className="h-5 w-5" />
-                View mission proof
+                View proof
               </button>
             </motion.div>
 
@@ -659,21 +733,35 @@ function App() {
             >
               <div className="glass-panel overflow-hidden rounded-3xl">
                 <div className="grid gap-0 lg:grid-cols-[0.92fr_1.08fr]">
-                  <div className="relative min-h-[380px] overflow-hidden bg-[#f8f5ef]">
-                    <img
-                      src={`${baseUrl}images/bio.jpeg`}
-                      alt="Roshini Talluru"
-                      className="h-full min-h-[380px] w-full object-cover object-center"
-                    />
-                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#08110f] to-transparent p-5">
-                      <div className="inline-flex items-center gap-2 rounded-full bg-[#f4c542] px-3 py-2 text-xs font-black text-[#08110f]">
-                        <MapPin className="h-3.5 w-3.5" />
-                        Texas
+                  <div className="relative min-h-[380px] overflow-hidden bg-[#f4c542] p-5 text-[#08110f]">
+                    <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,17,15,0.13)_1px,transparent_1px),linear-gradient(rgba(8,17,15,0.12)_1px,transparent_1px)] bg-[length:32px_32px]" />
+                    <div className="relative flex min-h-[340px] flex-col justify-between">
+                      <div>
+                        <p className="text-xs font-black uppercase tracking-[0.22em]">Portfolio Snapshot</p>
+                        <h2 className="mt-4 text-4xl font-black leading-none">
+                          Full-stack work, AI systems, and cloud delivery.
+                        </h2>
+                      </div>
+                      <div className="grid gap-3">
+                        {[
+                          ['Backend', 'Java, Go, Spring Boot, GraphQL, Kafka'],
+                          ['Frontend', 'React, Angular, TypeScript dashboards'],
+                          ['AI/Data', 'RAG apps, ML pipelines, NLP workflows'],
+                        ].map(([label, value]) => (
+                          <div key={label} className="rounded-2xl border border-[#08110f]/15 bg-[#08110f]/10 p-4 backdrop-blur">
+                            <p className="text-xs font-black uppercase">{label}</p>
+                            <p className="mt-1 text-sm font-black leading-5">{value}</p>
+                          </div>
+                        ))}
+                        <div className="inline-flex w-fit items-center gap-2 rounded-full bg-[#08110f] px-3 py-2 text-xs font-black text-[#f4c542]">
+                          <MapPin className="h-3.5 w-3.5" />
+                          Texas
+                        </div>
                       </div>
                     </div>
                   </div>
                   <div className="bg-[#0d1714] p-5">
-                    <p className="text-xs font-black uppercase text-[#f4c542]">Mission readiness console</p>
+                    <p className="text-xs font-black uppercase text-[#f4c542]">Choose what to review</p>
                     <div className="mt-4 grid gap-2">
                       {audienceModes.map((mode) => (
                         <button
@@ -721,23 +809,23 @@ function App() {
               >
                 <div className="flex items-center justify-between gap-4">
                   <div>
-                    <p className="text-xs font-black uppercase text-[#f4c542]">Flight readiness</p>
-                    <h2 className="mt-1 text-2xl font-black text-white">Hire signal telemetry</h2>
+                    <p className="text-xs font-black uppercase text-[#f4c542]">Portfolio overview</p>
+                    <h2 className="mt-1 text-2xl font-black text-white">Hiring highlights</h2>
                   </div>
-                  <span className="telemetry-pulse inline-flex items-center gap-2 rounded-full border border-[#72d8cf]/40 bg-[#72d8cf]/10 px-3 py-2 text-xs font-black text-[#bffcf5]">
+                  <span className="status-pulse inline-flex items-center gap-2 rounded-full border border-[#72d8cf]/40 bg-[#72d8cf]/10 px-3 py-2 text-xs font-black text-[#bffcf5]">
                     <Activity className="h-4 w-4" />
                     Live
                   </span>
                 </div>
                 <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                  {missionSignals.map((signal, index) => {
+                  {hiringHighlights.map((signal, index) => {
                     const Icon = signal.icon;
-                    const isActive = activeSignalIndex === index;
+                    const isActive = activeHighlightIndex === index;
                     return (
                       <button
                         key={signal.label}
                         type="button"
-                        onClick={() => setActiveSignalIndex(index)}
+                        onClick={() => setActiveHighlightIndex(index)}
                         className={`rounded-2xl border p-4 text-left transition ${
                           isActive
                             ? 'border-[#f4c542] bg-white/[0.12] shadow-[0_18px_45px_rgba(244,197,66,0.12)]'
@@ -769,21 +857,21 @@ function App() {
                 </div>
                 <AnimatePresence mode="wait">
                   <motion.div
-                    key={activeSignal.label}
+                    key={activeHighlight.label}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.24 }}
                     className="mt-4 rounded-2xl border border-white/10 bg-black/25 p-4"
                   >
-                    <p className="text-xs font-black uppercase" style={{ color: activeSignal.color }}>
-                      {activeSignal.label} locked
+                    <p className="text-xs font-black uppercase" style={{ color: activeHighlight.color }}>
+                      {activeHighlight.label} selected
                     </p>
-                    <p className="mt-2 text-sm font-semibold leading-6 text-[#e8f3ec]">{activeSignal.detail}</p>
+                    <p className="mt-2 text-sm font-semibold leading-6 text-[#e8f3ec]">{activeHighlight.detail}</p>
                   </motion.div>
                 </AnimatePresence>
-                <div className="command-feed mt-4 grid gap-2 rounded-2xl border border-white/10 bg-black/35 p-4 font-mono text-xs text-[#bffcf5]">
-                  {commandLines.map((line, index) => (
+                <div className="overview-feed mt-4 grid gap-2 rounded-2xl border border-white/10 bg-black/35 p-4 font-mono text-xs text-[#bffcf5]">
+                  {overviewLines.map((line, index) => (
                     <motion.div
                       key={line}
                       initial={{ opacity: 0, x: -8 }}
@@ -802,7 +890,7 @@ function App() {
         </section>
 
         <section id="about" className="section-shell bg-[#f8f5ef] text-[#08110f]">
-          <SectionHeader title="Mission-grade proof for high-stakes product teams" id="about" />
+          <SectionHeader title="Proof that is easy for hiring teams to scan" id="about" />
           <div className="grid gap-5 lg:grid-cols-3">
             <InteractiveProofCard
               icon={Server}
@@ -909,7 +997,7 @@ function App() {
 
         <section id="projects" className="section-shell bg-[#f8f5ef] text-[#08110f]">
           <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
-            <SectionHeader title="Mission workbench with live impact spotlight" id="projects" align="left" />
+            <SectionHeader title="Selected projects with live impact spotlight" id="projects" align="left" />
             <SegmentedControl
               items={projectCategories}
               activeItem={activeProjectCategory}
@@ -1147,7 +1235,7 @@ function App() {
       </main>
 
       <footer className="bg-[#08110f] px-4 py-8 text-center text-sm font-bold text-[#9fb0a8]">
-        &copy; 2026 Roshini Talluru. Mission-control portfolio built with React, Three.js, Framer Motion, and Tailwind CSS.
+        &copy; 2026 Roshini Talluru. Interactive portfolio built with React, Three.js, Framer Motion, and Tailwind CSS.
       </footer>
 
       <AnimatePresence>
