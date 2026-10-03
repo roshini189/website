@@ -1,738 +1,789 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { AnimatePresence, MotionConfig, motion } from 'framer-motion';
 import {
-  Github, 
-  Linkedin, 
-  Mail, 
-  ExternalLink, 
-  ChevronDown, 
-  Code, 
-  Database, 
-  Brain,
+  Github,
+  Linkedin,
+  Mail,
+  ArrowUpRight,
+  ArrowDown,
   Award,
   MapPin,
-  Calendar,
-  Star,
-  Server,
-  Globe,
-  BarChart3,
-  Cpu,
-  Cloud,
-  GitBranch,
-  AppWindow,
-  BugPlay,
-  Terminal,
-  Send,
   FileText,
+  Globe,
+  Brain,
+  BarChart3,
+  Calendar,
+  GraduationCap,
+  BookOpen,
+  Menu,
+  X,
+  Plus,
+  Minus,
 } from 'lucide-react';
+import {
+  projects,
+  skills,
+  skillCategories,
+  experience,
+  education,
+  awards,
+  publications,
+  resumeUrl,
+  photoUrl,
+  email,
+  linkedin,
+  github,
+  type Project,
+} from './data';
 
-interface Project {
-  id: number;
-  title: string;
-  description: string;
-  longDescription: string;
-  technologies: string[];
-  github: string;
-  category: string;
-  image: string;
-  Demo?: string;
+const sections = ['home', 'about', 'experience', 'projects', 'skills', 'education', 'awards', 'contact'];
+const ease = [0.22, 1, 0.36, 1] as const;
+
+const reveal = {
+  initial: { opacity: 0, y: 28 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: '-80px' },
+};
+
+function Reveal({ children, delay = 0, className = '' }: { children: ReactNode; delay?: number; className?: string }) {
+  return (
+    <motion.div className={className} {...reveal} transition={{ duration: 0.7, ease, delay }}>
+      {children}
+    </motion.div>
+  );
 }
 
-function App() {
-  const baseUrl = import.meta.env.BASE_URL;
-  const [activeSection, setActiveSection] = useState('home');
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [activeProjectCategory, setActiveProjectCategory] = useState('All');
-  const [activeSkillCategory, setActiveSkillCategory] = useState('All');
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-      
-      // Update active section based on scroll position
-      const sections = ['home', 'about', 'experience', 'projects', 'skills', 'education', 'awards', 'contact'];
-      const current = sections.find(section => {
-        const element = document.getElementById(section);
-        if (element) {
-          const rect = element.getBoundingClientRect();
-          return rect.top <= 100 && rect.bottom >= 100;
-        }
-        return false;
-      });
-      if (current) setActiveSection(current);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const projects: Project[] = [
-     {
-  
-    id: 1,
-    title: "Portfolio Website",
-    description: "A responsive and interactive personal portfolio website built with React and Tailwind CSS.",
-    longDescription: "This project showcases my skills, experience, and personal projects. Built using React for dynamic UI and Tailwind CSS for rapid styling, the site features smooth scroll navigation, modal project details, and category filtering for both skills and projects. It includes routing logic, reusable components, dynamic theming, and is deployed using GitHub Pages.",
-    technologies: [
-      "React", "Tailwind CSS", "JavaScript", "Vite", "React Hooks",
-      "Responsive Design", "Lucide Icons", "GitHub Pages",
-      "Component Reusability", "State Management"
-    ],
-    github: "https://github.com/roshini189/website",
-    category: "Full Stack Development",
-    image: `${baseUrl}images/port.jpeg`
-  },{
-      id: 2,
-      title: "AlResearchEase- AI Research Chatbot",
-      description: "Optimized a RAG-based AI web app using Ollama API LLM's and system performance with fine-tuning by 35%.",
-      longDescription: "AIResearchEase is a secure, intelligent AI-powered web application designed to simplify academic research workflows. Built using Retrieval-Augmented Generation (RAG), FAISS-based semantic search, and local Large Language Models (LLMs), the app lets users upload research papers and ask context-aware questions, receiving instant, accurate answers.",
-      technologies: ["Streamlit","Ollama API","Python","NLP","DeepLearning","RAG","LLM","FAISS", "Docker"],
-      github: "https://github.com/roshini189/AI_Research_Ease",
-      category: "Deeplearning",
-      image: `${baseUrl}images/Ai.jpeg` },
-    {
-      id: 3,
-      title: "ViceDetect - ML Prediction System",
-      description: "Advanced machine learning system predicting smoking and drinking habits with 73.2% accuracy using XGBoost and K-means clustering.",
-      longDescription: "Developed a comprehensive machine learning pipeline that analyzes behavioral patterns to predict smoking and drinking habits. Implemented advanced clustering algorithms, ensemble methods, and feature engineering techniques. The system processes large datasets and provides real-time predictions with detailed confidence intervals and feature importance analysis.",
-      technologies: ["R", "XGBoost", "K-means", "Machine Learning", "Data Visualization", "Statistical Analysis"],
-      github: "https://github.com/roshini189/ViceDetect",
-      category: "Machine Learning",
-      image: `${baseUrl}images/vice.jpeg` ,
-     },
-   
-    {
-      id: 4,
-      title: "SafeClick- Phishing Detection",
-      description: " A phishing detection web application using Django and JavaScript with 99.95% accuracy in threat detection with real-time insights.",
-      longDescription: "Safe Click is a real-time phishing detection web application. Users can input any URL, and the system analyzes it using structural, behavioral, and content-based features such as number of dots, use of sensitive termsand more to classify the URL as Safe or Phishing",
-      technologies: ["Python", "Django", "Javascript", "RFECV", "Deep Learning", "Gradient Boosting"],
-      github: "https://github.com/roshini189/Safeclick",
-      Demo:"",
-      category: "DataMining",
-      image: `${baseUrl}images/images.jpeg`  },
-    {
-      id: 5,
-      title: "Agricitease",
-      description: " An Angular-based web application with AES-encrypted Java backend to enable secure transactions between farmers and customers with an integrated IBM Watson Assistant for live chat support and user feedback service.",
-      longDescription: "Agricitease is a secure and user-friendly web application designed to eliminate intermediaries in the agricultural supply chain, enabling direct transactions between farmers and customers. This platform empowers farmers by providing them with a transparent marketplace, ensuring fair pricing and seamless trade.",
-      technologies: ["Java", "Angular", "Javascript", "MySQL", "Springboot", "RestAPI"],
-      github: "https://github.com/roshini189/Agricitease",
-      category: "Full Stack Development",
-      image: `${baseUrl}images/Agricitease.jpeg` },
-    {
-      id: 6,
-      title: "Customer Revenue Predictor - ML Prediction",
-      description: "Predicting customer revenue using advanced regression models and robust data preprocessing techniques in R.",
-      longDescription: "This project focuses on accurately forecasting customer revenue for an online retail platform using a variety of regression techniques. The pipeline begins with extensive data cleaning, missing value imputation, and outlier handling. Key features are transformed using log scaling and grouped at the customer level to better capture behavioral trends. We developed and evaluated multiple models including OLS, Partial Least Squares (PLS), LASSO, and Multivariate Adaptive Regression Splines (MARS). Through careful feature engineering and cross-validation, the MARS model emerged as the best performer, achieving the highest accuracy in terms of RMSE and R². This project showcases not only technical modeling skills but also a deep understanding of data quality, preprocessing strategies, and practical evaluation.",
-      technologies: ["R","Mice","RStudio","Caret","Regression"],
-      github: "https://github.com/roshini189/Customer-Revenue-Predictor",
-      category: "MachineLearning",
-      image: `${baseUrl}images/crp.jpeg` },
-   
-  ];
-
-  const skills = [
-    { name: "Java", level: 85, icon: Code, category: "Programming Languages" },
-    { name: "Python", level: 95, icon: Code, category: "Programming Languages" },
-    { name: "JavaScript/TypeScript", level: 90, icon: Code, category: "Programming Languages" },
-    { name: "C", level: 90, icon: Code, category: "Programming Languages" },
-    { name: "C++", level: 90, icon: Code, category: "Programming Languages" },
-    { name: "R", level: 88, icon: Code, category: "Programming Languages" },
-    { name: "Go", level: 80, icon: Code, category: "Programming Languages" },
-    { name: "PostgreSQL/MongoDB", level: 87, icon: Database, category: "Database" },
-{ name: "AzureSQL", level: 85, icon: Database, category: "Database" },
-{ name: "MYSQL", level: 80, icon: Database, category: "Database" },
-{ name: "DynamoDB/Cassandra", level: 78, icon: Database, category: "Database" },
-{ name: "Redis/Valkey", level: 78, icon: Database, category: "Database" },
-    { name: "React/Next.js", level: 92, icon: Globe, category: "Frontend" },
-    { name: "Angular", level: 90, icon: Globe, category: "Frontend" },
-    { name: "Vue.js", level: 78, icon: Globe, category: "Frontend" },
-    { name: "HTML", level: 92, icon: Globe, category: "Frontend" },
-    
-    { name: "CSS", level: 92, icon: Globe, category: "Frontend" },
-    
-    { name: "SCSS", level: 92, icon: Globe, category: "Frontend" },
-    { name: "Node.js/Express", level: 88, icon: Server, category: "Backend" },
-    { name: "Java/Spring Boot", level: 90, icon: Server, category: "Backend" },
-    { name: "GraphQL", level: 85, icon: Server, category: "Backend" },
-    { name: "Apache Kafka", level: 85, icon: Server, category: "Backend" },
-    { name: "JPA/Hibernate", level: 82, icon: Server, category: "Backend" },
-    { name: "Machine Learning", level: 90, icon: Brain, category: "AI/ML" },
-    { name: "Deep Learning", level: 85, icon: Cpu, category: "AI/ML" },
-     { name: "Natural Language Processing", level: 85, icon: Cpu, category: "AI/ML" },
-    { name: "Streamlit", level: 85, icon: Cpu, category: "AI/ML" },
-    { name: "MCP Servers & AI Agents", level: 90, icon: Brain, category: "AI/ML" },
-    { name: "Claude API / GitHub Copilot", level: 88, icon: Brain, category: "AI/ML" },
-    { name: "Prompt Engineering", level: 88, icon: Brain, category: "AI/ML" },
-        { name: "AWS/Azure", level: 83, icon: Cloud, category: "Cloud" },
-    { name: "Docker/Kubernetes", level: 80, icon: Server, category: "DevOps" },
-    { name: "Helm/Terraform", level: 78, icon: Server, category: "DevOps" },
-    { name: "Ansible", level: 75, icon: Server, category: "DevOps" },
-    { name: "Prometheus/Grafana", level: 80, icon: BarChart3, category: "DevOps" },
-    { name: "Git/CI/CD", level: 90, icon: GitBranch, category: "DevOps" },
-    { name: "Eclipse", level: 85, icon: AppWindow, category: "Applications" },
-  { name: "VS Code", level: 90, icon: AppWindow, category: "Applications" },
-  { name: "IntelliJ", level: 88, icon: AppWindow, category: "Applications" },
-  { name: "SonarQube", level: 80, icon: BugPlay, category: "Applications" },
-  { name: "Git", level: 90, icon: GitBranch, category: "Applications" },
-  { name: "JIRA", level: 85, icon: Terminal, category: "Applications" },
-  { name: "Bitbucket", level: 83, icon: GitBranch, category: "Applications" },
-  { name: "JUnit", level: 82, icon: BugPlay, category: "Applications" },
-  { name: "Postman", level: 87, icon: Send, category: "Applications" },
-
-  ];
-const filteredProjects = activeProjectCategory === "All"
-    ? projects
-    : projects.filter(p => {
-        if (activeProjectCategory === "Data Science") {
-          return ["Machine Learning", "DataMining", "Deeplearning"].includes(p.category);
-        } else if (activeProjectCategory === "Full Stack") {
-          return ["Full Stack Development"].includes(p.category);
-        }
-        return false;
-      });
-
-  const filteredSkills = activeSkillCategory === "All"
-    ? skills
-    : skills.filter(skill => skill.category === activeSkillCategory);
-
-
-  const experience = [
-    {
-      title: "Software Engineer",
-      company: "Cotiviti (Endeavour Technologies Inc)",
-      period: "Nov 2025 - Present",
-      description: "Designing cloud-native healthcare microservices with event-driven pipelines and AI-powered developer tooling for 30+ enterprise clients across claims adjudication and appeal processing platforms, maintaining >90% test coverage and <5% defect rate.",
-      achievements: [
-        "Architected Java/Spring Boot microservices and GraphQL APIs with a Kafka event service layer delivering significant throughput and fault isolation across high-volume claim adjudication workflows serving millions of transactions.",
-        "Engineered a custom MCP server integrating Jira, production-log, and context feeder AI agents and skills to autonomously drive spec-based development at enterprise scale.",
-        "Built AI code review and defect-analysis agents autonomously inspecting Spring Boot logic, GraphQL resolver chains, and Angular 16/TypeScript components, accelerating PR cycles by 60% while improving defect-fix and RCA efficiency.",
-        "Designed a reusable report-configuration framework for 30+ healthcare clients with dynamic mapping, standardizing validation rules and automating orchestration, eliminating 90% of manual onboarding for new clients.",
-        "Eliminated duplicate-claim revenue leakage by engineering an Angular 16/TS detection workflow integrating REST polling and Kafka event stream consumption to validate live claim status and enforce deduplication.",
-        "Implemented Prometheus metrics instrumentation and Grafana dashboards across 10+ microservices for real-time SLA visibility, proactive alerting, and data-driven performance tuning.",
-        "Standardized Kubernetes and Helm chart deployments with Jenkins CI/CD automated rollback triggers and blue-green strategies, reducing deployment downtime to near-zero for healthcare-critical systems."
-      ]
-    },
-    {
-      title: "Software Engineer",
-      company: "Community Dreams Foundation",
-      period: "Jul 2025 - Oct 2025",
-      description: "Developed a Java-based financial application to facilitate the organization's fund processing, achieving a 30% reduction in processing overhead.",
-      achievements: [
-        "Architected an Angular 16 micro-frontend and containerized Go microservices fund-tracking platform with reusable UI components and dynamic resource allocation, reducing high-traffic sudden disruptions by 80%.",
-        "Implemented MongoDB document funds data with indexed query optimization to scale to 1+ billion real-time records across 100+ client accounts, achieving API response times under 15 seconds through parallel handoffs.",
-        "Designed a lazy-loaded Angular module architecture with NgRx state management and reusable components, reducing bundle size and enabling rapid feature iteration through the micro-frontend and AWS ECS to support dynamic scale."
-      ]
-    },
-    {
-      title: "Application Developer",
-      company: "University of Oklahoma",
-      period: "Aug 2023 - May 2025",
-      description: "Rebuilt legacy university systems and delivered AI/ML-integrated full-stack platforms driving 40% engagement uplift and 30% performance improvement serving thousands of active users, establishing a team-wide AI-augmented engineering practice.",
-            achievements: [
-       "Boosted user engagement for React.js based learning platform by 40% through implementing personalized content recommendations, flexible tag-based navigation, and expert verification support.",
-  "Redesigned ISS web application using Angular 16 to incorporate reusable components for chat support and inter active dashboards, utilizing lazy loading and enhanced overall application performance by 30%.",
- "Designed a secure Azure SQL database using TDE encryption and role-based access control to store student records",
-      "Contributed to medical advancement by designing a machine learning-based web app that detects kidney stones using the Fuzzy C-means algorithm, enhanced with GLCM and DWT techniques.",
-      "Integrated Gemini and GitHub Copilot for AI-assisted LLM test generation and code scaffolding, establishing team-wide AI-augmented engineering practices across all active projects.",
-      "Built OAuth 2.0/JWT integrations securing access for 5,000+ student and faculty users with zero security incidents."]
-    },
-    {
-      title: "Software Engineer/Analyst",
-      company: "Deloitte",
-      period: "2022 - 2023",
-      description: "Led end-to-end development of web and enterprise apps using Java, Angular, and JavaScript, improving scalability and deployment through AWS, Kubernetes, and CI/CD tools. Recognized with the Game Changer Award for streamlining operations across 12 states.",
-      achievements: [
-        "Launched Career Compass, a Javascript web application employing Credly data to enhance skill tracking with an integrated milestone dashboard and networking module to ease career growth opportunities by 60%.",
-"Designed a Resource Tracking application using Angular/Typescript, optimizing tracking performance for 40 business units with enhanced OAuth 2.0 security protocols and Two-Factor Authentication."
- ,"Developed microservices, REST APIs using JAVA/Java EE/ SpringBoot and experienced working with JSON/XML."
- ,"Incorporated Kubernetes and helm charts to streamline the application maintenance and deployment process."
- ,"Hands-on experience with PCF, AWS, CI/CD, and associated tools JIRA, Jenkins, Git."
- ,"Honored with Game Changer award for optimizing operations & ensuring timely rollouts across 12 states.",   ]
-    },
-    {
-      title: "Software Developer",
-      company: "Talentsprint",
-      period: "Aug 2021 - May 2022",
-      description: "Delivered full-stack platforms integrating AES-256 encryption, IBM Watson NLP, and Elasticsearch-powered search, increasing buyer engagement by 40% and achieving <100ms API response times.",
-      achievements: [
-         "Architected an Angular/Java e-commerce platform with AES-256-encrypted transactions and IBM Watson for real-time chat, intent classification, and automated query resolution, boosting user engagement by 40% within 60 days."
- ,"Implemented REST APIs with JPA/Hibernate and MySQL composite-index queries achieving sub-1-second response times."
- ,"Built a Django/Python rental platform with Elasticsearch-backed multi-filter property search and an NLP conversational chatbot using named-entity recognition, improving search-to-inquiry conversion and match time by 35%."
- ,"Gained hands-on expertise in Angular, Django, Core Java, Python, and machine learning tools, while strengthening skills in secure web application design and deployment.",
-   ] },
-  ];
-
-  const scrollToSection = (sectionId: string) => {
-    document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
-  };
-
+function SectionHeading({ index, eyebrow, title, accent }: { index: string; eyebrow: string; title: string; accent: string }) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      {/* Navigation */}
-      <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-slate-900/95 backdrop-blur-md shadow-lg' : 'bg-transparent'
-      }`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div className="text-2xl font-bold text-white">
-              Roshini Talluru
-            </div>
-            <div className="hidden md:flex space-x-8">
-              {['home', 'about','experience',  'projects', 'skills', 'education','awards','contact'].map((item) => (
-                <button
-                  key={item}
-                  onClick={() => scrollToSection(item)}
-                  className={`capitalize transition-colors duration-200 ${
-                    activeSection === item 
-                      ? 'text-purple-400 border-b-2 border-purple-400' 
-                      : 'text-white hover:text-purple-300'
-                  }`}
-                >
-                  {item}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </nav>
+    <Reveal className="mb-14 md:mb-20">
+      <p className="eyebrow mb-4">
+        <span className="text-zinc-500">{index} /</span> {eyebrow}
+      </p>
+      <h2 className="text-4xl font-semibold tracking-tight text-white md:text-6xl">
+        {title} <span className="font-serif font-normal italic text-gradient">{accent}</span>
+      </h2>
+    </Reveal>
+  );
+}
 
-     
-    
-      {/* Hero Section */}
-      <section id="home" className="min-h-screen flex items-center justify-center relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-blue-600/20"></div>
-        <div className="text-center z-10 px-4">
-          <div className="mb-8">
-            <div className="w-32 h-32 mx-auto mb-6 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 p-1">
-              <img
-  src={`${baseUrl}images/bio.jpeg`}
-  alt="Roshini Talluru"
-  className="w-full h-full rounded-full object-cover"
-/>
-            </div>
-          </div>
-          <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 animate-fade-in">
-            Roshini Talluru
-          </h1>
-          <p className="text-xl md:text-2xl text-purple-200 mb-4 max-w-3xl mx-auto">
-            Software Engineer — Full-Stack, Cloud-Native & AI-Augmented Systems
-          </p>
-          <p className="text-lg text-purple-300 mb-8 max-w-2xl mx-auto">
-            Building healthcare-scale microservices and AI-powered developer tooling at the intersection of software engineering and data science
-          </p>
-          <div className="flex justify-center space-x-6 mb-12">
-            <a href="mailto:roshini_t@outlook.com" className="text-white hover:text-purple-300 transition-colors">
-              <Mail className="w-8 h-8" />
-            </a>
-            <a href="https://linkedin.com/in/roshinitalluru/" className="text-white hover:text-purple-300 transition-colors">
-              <Linkedin className="w-8 h-8" />
-            </a>
-            <a href="https://github.com/roshini189" className="text-white hover:text-purple-300 transition-colors">
-              <Github className="w-8 h-8" />
-            </a>
-
-{/* Resume Link */}
-<a
-  href="/images/Roshini_Talluru_Resume.pdf"
-  target="_blank"
-  rel="noopener noreferrer"
-  className="text-white hover:text-purple-300 transition-colors"
->
-  <FileText className="w-8 h-8" />
-</a>
-          </div>
-          <button 
-            onClick={() => scrollToSection('about')}
-            className="animate-bounce text-white hover:text-purple-300 transition-colors"
-          >
-            <ChevronDown className="w-8 h-8" />
-          </button>
-        </div>
-      </section>
-
-      {/* About Section */}
-      <section id="about" className="py-20 px-4">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl font-bold text-white text-center mb-16">About Me</h2>
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <p className="text-lg text-gray-300 leading-relaxed">
-                I'm a versatile technologist with expertise spanning full-stack development, cloud-native systems, 
-                and data science. As a Software Engineer at Cotiviti, I design healthcare-scale microservices and 
-                event-driven pipelines, and build AI-powered developer tooling that accelerates engineering teams 
-                across 30+ enterprise clients.
-              </p>
-              <p className="text-lg text-gray-300 leading-relaxed">
-                From developing scalable web applications with modern frameworks to implementing machine learning 
-                models and AI agents that drive business decisions, I thrive at the intersection of technology and data. 
-                My experience includes building end-to-end systems, engineering custom MCP servers and AI agents, 
-                optimizing performance, and creating intuitive user experiences.
-              </p>
-              <p className="text-lg text-gray-300 leading-relaxed">
-                I'm passionate about leveraging technology to solve complex problems and am always eager to 
-                learn new technologies and methodologies that can enhance my ability to deliver impactful solutions.
-              </p>
-              <p className="text-lg text-gray-300 leading-relaxed">
-              Recipient of multiple academic awards and scholarships for excellence in software engineering and data analytics.
-           </p>
-         
-
-              <div className="flex items-center space-x-4 text-purple-300">
-                <MapPin className="w-5 h-5" />
-                <span>Frisco, Texas</span>
-              </div>
-            </div>
-            <div className="bg-slate-900/50 backdrop-blur-sm rounded-2xl p-8 border border-purple-600/20">
-              <h3 className="text-2xl font-semibold text-white mb-6">Expertise Areas</h3>
-              <div className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <Globe className="w-5 h-5 text-purple-400" />
-                  <span className="text-gray-300">Full-Stack Development</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <Brain className="w-5 h-5 text-purple-400" />
-                  <span className="text-gray-300">Machine Learning & AI</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <BarChart3 className="w-5 h-5 text-purple-400" />
-                  <span className="text-gray-300">Data Science & Analytics</span>
-                </div>
-  
-                <div className="flex items-center space-x-3">
-                  <Calendar className="w-5 h-5 text-purple-400" />
-                  <span className="text-gray-300">5+ Years Experience</span>
-                </div>
-                  <div className="flex items-center space-x-3">
-  <FileText className="w-5 h-5 text-purple-400" />
-  <a
-    href={`${baseUrl}images/Roshini_Talluru_Resume.pdf`}
-    target="_blank"
-    rel="noopener noreferrer"
-    className="text-purple-300 hover:underline"
-  >
-    Curious about the journey behind these skills? Peek into my resume.
-  </a>
-</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-{/* Experience Section */}
-      <section id="experience" className="py-20 px-4 bg-slate-800/30">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl font-bold text-white text-center mb-16">Professional Experience</h2>
-          <div className="space-y-8">
-            {experience.map((exp, index) => (
-              <div key={index} className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-8 border border-purple-500/20">
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
-                  <div>
-                    <h3 className="text-2xl font-semibold text-white mb-2">{exp.title}</h3>
-                    <p className="text-purple-300 text-lg">{exp.company}</p>
-                  </div>
-                  <div className="flex items-center space-x-2 text-gray-400 mt-2 md:mt-0">
-                    <Calendar className="w-4 h-4" />
-                    <span>{exp.period}</span>
-                  </div>
-                </div>
-                <p className="text-gray-300 mb-6 leading-relaxed">{exp.description}</p>
-                <div className="space-y-2">
-                  <h4 className="text-white font-semibold mb-3">Key Achievements:</h4>
-                  {exp.achievements.map((achievement, idx) => (
-                    <div key={idx} className="flex items-start space-x-3">
-                      <Star className="w-4 h-4 text-purple-400 mt-1 flex-shrink-0" />
-                      <span className="text-gray-300">{achievement}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-       {/* Projects Section */}
-      <section id="projects" className="py-20 px-4 bg-slate-800/30">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl font-bold text-white text-center mb-16">Featured Projects</h2>
-          <div className="flex justify-center gap-4 mb-12">
-            {['All', 'Data Science', 'Full Stack'].map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setActiveProjectCategory(cat)}
-                className={`px-4 py-2 rounded-full text-sm font-semibold border border-purple-500/30 text-white transition ${
-                  activeProjectCategory === cat ? 'bg-purple-600/30' : 'hover:bg-purple-600/10'
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredProjects.map((project) => (
-              <div key={project.id} className="group bg-slate-800/50 backdrop-blur-sm rounded-2xl overflow-hidden border border-purple-500/20 hover:border-purple-400/40 transition-all duration-300 hover:transform hover:scale-105">
-                <div className="relative overflow-hidden">
-                  <img src={project.image} alt={project.title} className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent"></div>
-                  <div className="absolute top-4 right-4">
-                    <span className="bg-purple-600/80 text-white px-3 py-1 rounded-full text-sm">
-                      {project.category}
-                    </span>
-                  </div>
-                </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold text-white mb-3">{project.title}</h3>
-                  <p className="text-gray-300 mb-4 line-clamp-3">{project.description}</p>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {project.technologies.slice(0, 3).map((tech) => (
-                      <span key={tech} className="bg-purple-600/20 text-purple-300 px-2 py-1 rounded text-sm">
-                        {tech}
-                      </span>
-                    ))}
-                    {project.technologies.length > 3 && (
-                      <span className="bg-gray-600/20 text-gray-400 px-2 py-1 rounded text-sm">
-                        +{project.technologies.length - 3} more
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <button onClick={() => setSelectedProject(project)} className="text-purple-400 hover:text-purple-300 transition-colors">
-                      Learn More
-                    </button>
-                    <a href={project.github} className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors">
-                      <Github className="w-4 h-4" />
-                      <ExternalLink className="w-4 h-4" />
-                    </a>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Skills Section */}
-      <section id="skills" className="py-20 px-4">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl font-bold text-white text-center mb-16">Skills & Technologies</h2>
-          <div className="flex justify-center gap-4 mb-12">
-            {['All', 'Programming Languages', 'Database', 'Frontend', 'Backend', 'AI/ML','Applications', 'Cloud', 'DevOps'].map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setActiveSkillCategory(cat)}
-                className={`px-4 py-2 rounded-full text-sm font-semibold border border-purple-500/30 text-white transition ${
-                  activeSkillCategory === cat ? 'bg-purple-600/30' : 'hover:bg-purple-600/10'
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-          <div className="grid md:grid-cols-2 gap-8">
-            {filteredSkills.map((skill) => {
-              const IconComponent = skill.icon;
-              return (
-                <div key={skill.name} className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-6 border border-purple-500/20">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center space-x-3">
-                      <IconComponent className="w-6 h-6 text-purple-400" />
-                      <div>
-                        <span className="text-white font-semibold">{skill.name}</span>
-                        <div className="text-sm text-purple-300">{skill.category}</div>
-                      </div>
-                    </div>
-                    <span className="text-purple-300">{skill.level}%</span>
-                  </div>
-                  <div className="w-full bg-slate-700 rounded-full h-2">
-                    <div className="bg-gradient-to-r from-purple-500 to-blue-500 h-2 rounded-full transition-all duration-1000 ease-out" style={{ width: `${skill.level}%` }}></div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-      
-{/* Education Section */}
-<section id="education" className="py-20 px-4 bg-slate-800/30">
-  <div className="max-w-6xl mx-auto">
-    <h2 className="text-4xl font-bold text-white text-center mb-16">Education</h2>
-    <div className="space-y-8">
-      <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-8 border border-purple-500/20">
-        <div className="flex justify-between items-center mb-4">
-          <div>
-            <h3 className="text-xl font-semibold text-white">M.S. in Computer Science</h3>
-            <p className="text-purple-300">University of Oklahoma, Norman, OK</p>
-          </div>
-          <span className="text-gray-400">Aug 2023 - May 2025</span>
-          </div>
-        <p className="text-gray-300">Awarded the Dorothy Grace Barkow Scholarship ($3,000) in recognition of academic excellence.</p>  
-        <p className="text-gray-300">Relevant Coursework: Machine Learning, Advanced Data Mining, Database Systems, Deep Learning, Healthcare Analytics, Big Data.</p>
-      </div>
-      <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-8 border border-purple-500/20">
-        <div className="flex justify-between items-center mb-4">
-          <div>
-            <h3 className="text-xl font-semibold text-white">B.Tech in Computer Science and Engineering</h3>
-            <p className="text-purple-300">BVRIT Hyderabad</p>
-          </div>
-          <span className="text-gray-400">2017 - 2021</span>
-        </div>
-        <p className="text-gray-300">Graduated with First Class Distinction. Involved in research and Women in Software Engineering Program (WISE).</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-      {/* Awards & Publications Section */}
-      <section id="awards" className="py-20 px-4">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl font-bold text-white text-center mb-16">Awards & Publications</h2>
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-8 border border-purple-500/20">
-              <div className="flex items-center space-x-3 mb-4">
-                <Award className="w-6 h-6 text-purple-400" />
-                <h3 className="text-xl font-semibold text-white">Awards & Recognition</h3>
-              </div>
-              <ul className="space-y-3">
-                <li className="flex items-start space-x-3">
-                  <Star className="w-4 h-4 text-purple-400 mt-1 flex-shrink-0" />
-                  <span className="text-gray-300">Game Changer Award, Deloitte — recognized for outstanding delivery performance and zero-escalation rollouts.</span>
-                </li>
-                <li className="flex items-start space-x-3">
-                  <Star className="w-4 h-4 text-purple-400 mt-1 flex-shrink-0" />
-                  <span className="text-gray-300">Dorothy Grace Barkow Scholarship ($3,000) — awarded for academic excellence.</span>
-                </li>
-                <li className="flex items-start space-x-3">
-                  <Star className="w-4 h-4 text-purple-400 mt-1 flex-shrink-0" />
-                  <span className="text-gray-300">Oracle Certified — Advanced Artificial Intelligence with Machine Learning in Java.</span>
-                </li>
-                <li className="flex items-start space-x-3">
-                  <Star className="w-4 h-4 text-purple-400 mt-1 flex-shrink-0" />
-                  <span className="text-gray-300">Microsoft Certified — Azure AI Engineer Associate.</span>
-                </li>
-                <li className="flex items-start space-x-3">
-                  <Star className="w-4 h-4 text-purple-400 mt-1 flex-shrink-0" />
-                  <span className="text-gray-300">Codinza Certified — Web Development using ReactJS and Java.</span>
-                </li>
-              </ul>
-            </div>
-            <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-8 border border-purple-500/20">
-              <div className="flex items-center space-x-3 mb-4">
-                <FileText className="w-6 h-6 text-purple-400" />
-                <h3 className="text-xl font-semibold text-white">Research Publications</h3>
-              </div>
-              <ul className="space-y-3">
-                <li className="flex items-start space-x-3">
-                  <Star className="w-4 h-4 text-purple-400 mt-1 flex-shrink-0" />
-                  <span className="text-gray-300">"Examination Room Guidance System" — Third International Conference on Engineering and Advancement in Technology (ICEAT), IEEE, 2022.</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Contact Section */}
-      <section id="contact" className="py-20 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl font-bold text-white mb-8">Let's Connect</h2>
-          <p className="text-xl text-gray-300 mb-12">
-            I'm always interested in discussing new opportunities, collaborations, and innovative projects
-          </p>
-          <div className="grid md:grid-cols-3 gap-8">
-            <a
-              href="mailto:roshini_t@outlook.com"
-              className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-8 border border-purple-500/20 hover:border-purple-400/40 transition-all duration-300 hover:transform hover:scale-105 group"
-            >
-              <Mail className="w-12 h-12 text-purple-400 mx-auto mb-4 group-hover:scale-110 transition-transform" />
-              <h3 className="text-white font-semibold mb-2">Email</h3>
-              <p className="text-gray-300">roshini_t@outlook.com</p>
-            </a>
-            <a
-              href="https://linkedin.com/in/roshinitalluru/"
-              className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-8 border border-purple-500/20 hover:border-purple-400/40 transition-all duration-300 hover:transform hover:scale-105 group"
-            >
-              <Linkedin className="w-12 h-12 text-purple-400 mx-auto mb-4 group-hover:scale-110 transition-transform" />
-              <h3 className="text-white font-semibold mb-2">LinkedIn</h3>
-              <p className="text-gray-300">Connect with me</p>
-            </a>
-            <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-8 border border-purple-500/20">
-              <MapPin className="w-12 h-12 text-purple-400 mx-auto mb-4" />
-              <h3 className="text-white font-semibold mb-2">Location</h3>
-              <p className="text-gray-300">Frisco, TX</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="py-8 px-4 border-t border-purple-500/20">
-        <div className="max-w-6xl mx-auto text-center">
-          <p className="text-gray-400">
-            © 2025 Roshini Talluru. All Rights Reserved.
-          </p>
-        </div>
-      </footer>
-
-      {/* Project Modal */}
-      {selectedProject && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-800 rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="relative">
-              <img 
-                src={selectedProject.image} 
-                alt={selectedProject.title}
-                className="w-full h-64 object-cover rounded-t-2xl"
-              />
-              <button
-                onClick={() => setSelectedProject(null)}
-                className="absolute top-4 right-4 bg-black/50 text-white rounded-full w-10 h-10 flex items-center justify-center hover:bg-black/70 transition-colors"
-              >
-                ×
-              </button>
-            </div>
-            <div className="p-8">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-2xl font-bold text-white">{selectedProject.title}</h3>
-                <span className="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">
-                  {selectedProject.category}
-                </span>
-              </div>
-              <p className="text-gray-300 mb-6 leading-relaxed">
-                {selectedProject.longDescription}
-              </p>
-              <div className="mb-6">
-                <h4 className="text-white font-semibold mb-3">Technologies Used:</h4>
-                <div className="flex flex-wrap gap-2">
-                  {selectedProject.technologies.map((tech) => (
-                    <span key={tech} className="bg-purple-600/20 text-purple-300 px-3 py-1 rounded-full text-sm">
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <div className="flex space-x-4">
-                <a
-                  href={selectedProject.github}
-                  className="flex items-center space-x-2 bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors"
-                >
-                  <Github className="w-4 h-4" />
-                  <span>View Code</span>
-                </a>
-                <button
-                  onClick={() => setSelectedProject(null)}
-                  className="px-6 py-3 border border-gray-600 text-gray-300 rounded-lg hover:bg-gray-700 transition-colors"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+function FilterTabs({ id, options, value, onChange }: { id: string; options: string[]; value: string; onChange: (v: string) => void }) {
+  return (
+    <div className="mb-10 flex flex-wrap gap-2">
+      {options.map((opt) => (
+        <button
+          key={opt}
+          onClick={() => onChange(opt)}
+          aria-pressed={value === opt}
+          className={`relative rounded-full border border-white/10 px-4 py-2 text-sm font-medium transition-colors ${
+            value === opt ? 'text-ink' : 'text-zinc-400 hover:text-white'
+          }`}
+        >
+          {value === opt && (
+            <motion.span
+              layoutId={`${id}-pill`}
+              className="absolute inset-0 rounded-full bg-gradient-to-r from-iris to-peach"
+              transition={{ type: 'spring', bounce: 0.2, duration: 0.5 }}
+            />
+          )}
+          <span className="relative">{opt}</span>
+        </button>
+      ))}
     </div>
   );
 }
 
-export default App; 
+function Nav({ active }: { active: string }) {
+  const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  return (
+    <header className="fixed inset-x-0 top-0 z-50 px-4 pt-4">
+      <nav
+        className={`mx-auto flex max-w-6xl items-center justify-between rounded-full border px-4 py-2.5 transition-all duration-500 md:px-6 ${
+          scrolled || open ? 'border-white/10 bg-ink/70 shadow-2xl shadow-black/40 backdrop-blur-xl' : 'border-transparent'
+        }`}
+      >
+        <a href="#home" className="font-serif text-2xl italic text-white">
+          Roshini<span className="text-iris">.</span>
+        </a>
+        <ul className="hidden items-center gap-1 lg:flex">
+          {sections.slice(1).map((s) => (
+            <li key={s}>
+              <a
+                href={`#${s}`}
+                className={`relative block rounded-full px-3.5 py-1.5 text-sm capitalize transition-colors ${
+                  active === s ? 'text-white' : 'text-zinc-400 hover:text-white'
+                }`}
+              >
+                {active === s && (
+                  <motion.span
+                    layoutId="nav-pill"
+                    className="absolute inset-0 rounded-full bg-white/10"
+                    transition={{ type: 'spring', bounce: 0.2, duration: 0.5 }}
+                  />
+                )}
+                <span className="relative">{s}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+        <a
+          href={resumeUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hidden items-center gap-1.5 rounded-full bg-white px-4 py-1.5 text-sm font-semibold text-ink transition hover:bg-peach lg:flex"
+        >
+          Résumé <ArrowUpRight className="h-4 w-4" />
+        </a>
+        <button className="text-white lg:hidden" onClick={() => setOpen((o) => !o)} aria-label="Toggle menu" aria-expanded={open}>
+          {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+        </button>
+      </nav>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            className="mx-auto mt-3 max-w-6xl rounded-3xl border border-white/10 bg-ink/95 p-4 backdrop-blur-xl lg:hidden"
+          >
+            {sections.map((s) => (
+              <a
+                key={s}
+                href={`#${s}`}
+                onClick={() => setOpen(false)}
+                className={`block rounded-xl px-4 py-3 capitalize ${active === s ? 'bg-white/10 text-white' : 'text-zinc-400'}`}
+              >
+                {s}
+              </a>
+            ))}
+            <a href={resumeUrl} target="_blank" rel="noopener noreferrer" className="mt-2 block rounded-xl bg-white px-4 py-3 font-semibold text-ink">
+              Résumé ↗
+            </a>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </header>
+  );
+}
+
+function Hero() {
+  const stats = [
+    { value: '5+', label: 'Years building software' },
+    { value: '30+', label: 'Enterprise clients served' },
+    { value: `${projects.length}`, label: 'Featured projects' },
+    { value: `${awards.length}`, label: 'Awards & certifications' },
+  ];
+  const socials = [
+    { href: `mailto:${email}`, icon: Mail, label: 'Email' },
+    { href: linkedin, icon: Linkedin, label: 'LinkedIn' },
+    { href: github, icon: Github, label: 'GitHub' },
+  ];
+
+  return (
+    <section id="home" className="relative flex min-h-screen items-center overflow-hidden px-4 pb-16 pt-32">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute -left-40 top-10 h-[34rem] w-[34rem] animate-drift rounded-full bg-iris/25 blur-[120px]" />
+        <div className="absolute -right-32 bottom-0 h-[30rem] w-[30rem] animate-drift rounded-full bg-peach/15 blur-[120px] [animation-delay:-9s]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:72px_72px] [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_75%)]" />
+      </div>
+
+      <div className="relative mx-auto grid w-full max-w-6xl items-center gap-14 lg:grid-cols-[1.4fr_1fr]">
+        <div>
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease }}
+            className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-sm text-zinc-300"
+          >
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+            </span>
+            Software Engineer @ Cotiviti
+          </motion.div>
+
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, ease, delay: 0.1 }}
+            className="text-6xl font-semibold leading-[0.95] tracking-tight text-white sm:text-7xl md:text-8xl"
+          >
+            Roshini
+            <br />
+            <span className="font-serif font-normal italic text-gradient">Talluru</span>
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease, delay: 0.25 }}
+            className="mt-8 max-w-xl text-lg leading-relaxed text-zinc-400 md:text-xl"
+          >
+            Software Engineer — <span className="text-white">Full-Stack, Cloud-Native & AI-Augmented Systems.</span> Building
+            healthcare-scale microservices and AI-powered developer tooling at the intersection of software engineering and
+            data science.
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease, delay: 0.4 }}
+            className="mt-10 flex flex-wrap items-center gap-4"
+          >
+            <a
+              href="#projects"
+              className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-iris to-peach px-6 py-3 font-semibold text-ink transition hover:shadow-[0_0_40px_-6px] hover:shadow-iris"
+            >
+              View my work <ArrowDown className="h-4 w-4 transition group-hover:translate-y-0.5" />
+            </a>
+            <a
+              href={resumeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-full border border-white/15 px-6 py-3 font-semibold text-white transition hover:border-white/40 hover:bg-white/5"
+            >
+              <FileText className="h-4 w-4" /> Résumé
+            </a>
+            <div className="flex items-center gap-1 sm:ml-2">
+              {socials.map(({ href, icon: Icon, label }) => (
+                <a
+                  key={label}
+                  href={href}
+                  aria-label={label}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-full p-3 text-zinc-400 transition hover:bg-white/5 hover:text-white"
+                >
+                  <Icon className="h-5 w-5" />
+                </a>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.92 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1, ease, delay: 0.2 }}
+          className="relative mx-auto w-64 sm:w-80"
+        >
+          <div className="absolute -inset-3 animate-spin-slow rounded-[2.5rem] bg-[conic-gradient(from_0deg,#a78bfa,#f0abfc,#fbbf9a,#a78bfa)] opacity-60 blur-2xl" />
+          <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] border border-white/15 bg-ink-2">
+            <img src={photoUrl} alt="Roshini Talluru" className="h-full w-full object-cover" />
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/90 to-transparent p-5">
+              <p className="flex items-center gap-2 text-sm text-zinc-200">
+                <MapPin className="h-4 w-4 text-peach" /> Frisco, Texas
+              </p>
+            </div>
+          </div>
+        </motion.div>
+
+        <motion.dl
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease, delay: 0.55 }}
+          className="grid grid-cols-2 gap-px overflow-hidden rounded-3xl border border-white/[0.07] bg-white/[0.07] md:grid-cols-4 lg:col-span-2"
+        >
+          {stats.map((s) => (
+            <div key={s.label} className="flex flex-col-reverse bg-ink/80 p-6 backdrop-blur">
+              <dt className="mt-1 text-sm text-zinc-500">{s.label}</dt>
+              <dd className="font-serif text-5xl italic text-white">{s.value}</dd>
+            </div>
+          ))}
+        </motion.dl>
+      </div>
+    </section>
+  );
+}
+
+function Marquee() {
+  const items = [
+    'Java / Spring Boot', 'Angular', 'React', 'GraphQL', 'Kafka', 'Kubernetes',
+    'Python', 'MCP Servers & AI Agents', 'RAG / LLMs', 'AWS / Azure', 'Prometheus / Grafana', 'Machine Learning',
+  ];
+  return (
+    <div aria-hidden className="relative overflow-hidden border-y border-white/[0.07] py-6 [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
+      <div className="flex w-max animate-marquee">
+        {[...items, ...items].map((item, i) => (
+          <span key={i} className="flex items-center gap-12 whitespace-nowrap pr-12 font-serif text-3xl italic text-zinc-500">
+            {item} <span className="text-base not-italic text-iris">✦</span>
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function About() {
+  const areas = [
+    { icon: Globe, label: 'Full-Stack Development' },
+    { icon: Brain, label: 'Machine Learning & AI' },
+    { icon: BarChart3, label: 'Data Science & Analytics' },
+    { icon: Calendar, label: '5+ Years Experience' },
+  ];
+  return (
+    <section id="about" className="px-4 py-28 md:py-36">
+      <div className="mx-auto max-w-6xl">
+        <SectionHeading index="01" eyebrow="About" title="Engineer by craft," accent="curious by nature." />
+        <div className="grid gap-5 md:grid-cols-3">
+          <Reveal className="card p-8 md:col-span-2 md:p-10">
+            <div className="space-y-5 text-lg leading-relaxed text-zinc-400">
+              <p>
+                I'm a versatile technologist with expertise spanning{' '}
+                <span className="text-white">full-stack development, cloud-native systems, and data science</span>. As a Software
+                Engineer at Cotiviti, I design healthcare-scale microservices and event-driven pipelines, and build AI-powered
+                developer tooling that accelerates engineering teams across 30+ enterprise clients.
+              </p>
+              <p>
+                From developing scalable web applications with modern frameworks to implementing machine learning models and AI
+                agents that drive business decisions, I thrive at the intersection of technology and data. My experience includes
+                building end-to-end systems, engineering custom MCP servers and AI agents, optimizing performance, and creating
+                intuitive user experiences.
+              </p>
+              <p>
+                I'm passionate about leveraging technology to solve complex problems and am always eager to learn new technologies
+                and methodologies that can enhance my ability to deliver impactful solutions.
+              </p>
+            </div>
+          </Reveal>
+          <div className="grid gap-5">
+            <Reveal delay={0.1} className="card p-8">
+              <h3 className="eyebrow mb-6">Expertise areas</h3>
+              <ul className="space-y-4">
+                {areas.map(({ icon: Icon, label }) => (
+                  <li key={label} className="flex items-center gap-3 text-zinc-200">
+                    <span className="grid h-9 w-9 place-items-center rounded-xl bg-iris/10 text-iris">
+                      <Icon className="h-4 w-4" />
+                    </span>
+                    {label}
+                  </li>
+                ))}
+              </ul>
+            </Reveal>
+            <Reveal delay={0.2}>
+              <a
+                href={resumeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group card flex h-full flex-col justify-between gap-6 bg-gradient-to-br from-iris/15 to-peach/10 p-8 transition hover:border-white/20"
+              >
+                <FileText className="h-6 w-6 text-peach" />
+                <p className="text-lg text-white">
+                  Curious about the journey behind these skills?{' '}
+                  <span className="inline-flex items-center gap-1 font-serif italic text-gradient">
+                    Peek into my résumé
+                    <ArrowUpRight className="h-4 w-4 text-peach transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                  </span>
+                </p>
+              </a>
+            </Reveal>
+          </div>
+        </div>
+        <Reveal delay={0.1} className="mt-5">
+          <p className="card px-8 py-5 text-zinc-400">
+            <Award className="mr-2 inline h-4 w-4 text-peach" />
+            Recipient of multiple academic awards and scholarships for excellence in software engineering and data analytics.
+          </p>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+function ExperienceSection() {
+  const [expanded, setExpanded] = useState<number | null>(0);
+  return (
+    <section id="experience" className="px-4 py-28 md:py-36">
+      <div className="mx-auto max-w-6xl">
+        <SectionHeading index="02" eyebrow="Experience" title="Where I've" accent="made an impact." />
+        <ol className="relative border-l border-white/10 md:ml-[11rem]">
+          {experience.map((exp, i) => {
+            const isOpen = expanded === i;
+            return (
+              <motion.li key={exp.company} {...reveal} transition={{ duration: 0.7, ease }} className="relative pb-12 pl-8 last:pb-0 md:pl-12">
+                <span
+                  className={`absolute -left-[7px] top-2 h-3.5 w-3.5 rounded-full border-2 border-ink ${
+                    i === 0 ? 'bg-gradient-to-r from-iris to-peach shadow-[0_0_20px] shadow-iris' : 'bg-zinc-600'
+                  }`}
+                />
+                <p className="mb-2 font-mono text-xs uppercase tracking-widest text-zinc-500 md:absolute md:-left-[11rem] md:top-1.5 md:mb-0 md:w-36 md:text-right">
+                  {exp.period}
+                </p>
+                <div className="card p-6 transition hover:border-white/15 md:p-8">
+                  <h3 className="text-2xl font-semibold text-white">{exp.title}</h3>
+                  <p className="mt-1 font-serif text-xl italic text-iris">{exp.company}</p>
+                  <p className="mt-4 leading-relaxed text-zinc-400">{exp.description}</p>
+                  <button
+                    onClick={() => setExpanded(isOpen ? null : i)}
+                    aria-expanded={isOpen}
+                    className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-white transition hover:text-peach"
+                  >
+                    <span className="grid h-6 w-6 place-items-center rounded-full border border-white/20">
+                      {isOpen ? <Minus className="h-3 w-3" /> : <Plus className="h-3 w-3" />}
+                    </span>
+                    {isOpen ? 'Hide' : 'Show'} key achievements ({exp.achievements.length})
+                  </button>
+                  <AnimatePresence initial={false}>
+                    {isOpen && (
+                      <motion.ul
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.4, ease }}
+                        className="overflow-hidden"
+                      >
+                        {exp.achievements.map((a) => (
+                          <li key={a} className="mt-4 flex gap-3 text-zinc-300 first:mt-6">
+                            <span className="mt-2.5 h-1 w-3 flex-shrink-0 rounded-full bg-gradient-to-r from-iris to-peach" />
+                            <span className="leading-relaxed">{a}</span>
+                          </li>
+                        ))}
+                      </motion.ul>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </motion.li>
+            );
+          })}
+        </ol>
+      </div>
+    </section>
+  );
+}
+
+function Projects({ onSelect }: { onSelect: (p: Project) => void }) {
+  const [filter, setFilter] = useState('All');
+  const visible = filter === 'All' ? projects : projects.filter((p) => p.group === filter);
+  return (
+    <section id="projects" className="px-4 py-28 md:py-36">
+      <div className="mx-auto max-w-6xl">
+        <SectionHeading index="03" eyebrow="Projects" title="Selected" accent="work." />
+        <FilterTabs id="projects" options={['All', 'Data Science', 'Full Stack']} value={filter} onChange={setFilter} />
+        <motion.div layout className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <AnimatePresence mode="popLayout">
+            {visible.map((p) => (
+              <motion.article
+                layout
+                key={p.id}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.35, ease }}
+                className="group card flex flex-col overflow-hidden transition-[border-color,box-shadow] hover:border-white/20 hover:shadow-2xl hover:shadow-iris/10"
+              >
+                <button onClick={() => onSelect(p)} className="relative block aspect-[16/10] overflow-hidden text-left" aria-label={`Open ${p.title}`}>
+                  <img src={p.image} alt="" className="h-full w-full object-cover transition duration-700 group-hover:scale-105" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/20 to-transparent" />
+                  <span className="chip absolute left-4 top-4 bg-ink/60 backdrop-blur">{p.category}</span>
+                </button>
+                <div className="flex flex-1 flex-col p-6">
+                  <h3 className="text-xl font-semibold text-white">{p.title}</h3>
+                  <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-zinc-400">{p.description}</p>
+                  <div className="mt-5 flex flex-wrap gap-2">
+                    {p.technologies.slice(0, 3).map((t) => (
+                      <span key={t} className="chip">{t}</span>
+                    ))}
+                    {p.technologies.length > 3 && <span className="chip text-zinc-500">+{p.technologies.length - 3}</span>}
+                  </div>
+                  <div className="mt-auto flex items-center justify-between pt-6">
+                    <button onClick={() => onSelect(p)} className="inline-flex items-center gap-1 text-sm font-semibold text-white transition hover:text-peach">
+                      Learn more <ArrowUpRight className="h-4 w-4" />
+                    </button>
+                    <a
+                      href={p.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${p.title} on GitHub`}
+                      className="rounded-full p-2 text-zinc-500 transition hover:bg-white/5 hover:text-white"
+                    >
+                      <Github className="h-5 w-5" />
+                    </a>
+                  </div>
+                </div>
+              </motion.article>
+            ))}
+          </AnimatePresence>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+function Skills() {
+  const [filter, setFilter] = useState('All');
+  const groups = useMemo(() => {
+    const cats = filter === 'All' ? skillCategories.slice(1) : [filter];
+    return cats.map((c) => ({ category: c, items: skills.filter((s) => s.category === c) }));
+  }, [filter]);
+
+  return (
+    <section id="skills" className="px-4 py-28 md:py-36">
+      <div className="mx-auto max-w-6xl">
+        <SectionHeading index="04" eyebrow="Skills" title="Tools of" accent="the trade." />
+        <FilterTabs id="skills" options={skillCategories} value={filter} onChange={setFilter} />
+        <div className="grid items-start gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {groups.map(({ category, items }, i) => (
+            <motion.div
+              key={`${filter}-${category}`}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, ease, delay: i * 0.04 }}
+              className="card p-6"
+            >
+              <h3 className="eyebrow mb-5 flex items-center justify-between">
+                {category} <span className="text-zinc-600">{String(items.length).padStart(2, '0')}</span>
+              </h3>
+              <ul className="space-y-4">
+                {items.map(({ name, level, icon: Icon }) => (
+                  <li key={name}>
+                    <div className="mb-1.5 flex items-center justify-between text-sm">
+                      <span className="flex items-center gap-2 text-zinc-200">
+                        <Icon className="h-3.5 w-3.5 text-zinc-500" /> {name}
+                      </span>
+                      <span className="font-mono text-xs text-zinc-500">{level}%</span>
+                    </div>
+                    <div className="h-1 overflow-hidden rounded-full bg-white/[0.06]">
+                      <motion.div
+                        className="h-full rounded-full bg-gradient-to-r from-iris to-peach"
+                        initial={{ width: 0 }}
+                        whileInView={{ width: `${level}%` }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 1.1, ease }}
+                      />
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Education() {
+  return (
+    <section id="education" className="px-4 py-28 md:py-36">
+      <div className="mx-auto max-w-6xl">
+        <SectionHeading index="05" eyebrow="Education" title="Foundations &" accent="study." />
+        <div className="grid gap-5 md:grid-cols-2">
+          {education.map((e, i) => (
+            <Reveal key={e.degree} delay={i * 0.1} className="card relative overflow-hidden p-8">
+              <GraduationCap className="absolute -right-6 -top-6 h-36 w-36 text-white/[0.03]" />
+              <p className="font-mono text-xs uppercase tracking-widest text-zinc-500">{e.period}</p>
+              <h3 className="mt-4 text-2xl font-semibold text-white">{e.degree}</h3>
+              <p className="mt-1 font-serif text-xl italic text-iris">{e.school}</p>
+              <div className="mt-5 space-y-3 text-zinc-400">
+                {e.notes.map((n) => (
+                  <p key={n}>{n}</p>
+                ))}
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Awards() {
+  return (
+    <section id="awards" className="px-4 py-28 md:py-36">
+      <div className="mx-auto max-w-6xl">
+        <SectionHeading index="06" eyebrow="Recognition" title="Awards &" accent="publications." />
+        <div className="grid gap-5 lg:grid-cols-[1.5fr_1fr]">
+          <Reveal className="card p-8">
+            <h3 className="mb-6 flex items-center gap-2 text-lg font-semibold text-white">
+              <Award className="h-5 w-5 text-peach" /> Awards & Recognition
+            </h3>
+            <ul className="divide-y divide-white/[0.06]">
+              {awards.map((a, i) => (
+                <li key={a} className="flex gap-5 py-4">
+                  <span className="font-mono text-sm text-zinc-600">{String(i + 1).padStart(2, '0')}</span>
+                  <span className="text-zinc-300">{a}</span>
+                </li>
+              ))}
+            </ul>
+          </Reveal>
+          <Reveal delay={0.1} className="card flex flex-col bg-gradient-to-br from-iris/10 to-transparent p-8">
+            <h3 className="mb-6 flex items-center gap-2 text-lg font-semibold text-white">
+              <BookOpen className="h-5 w-5 text-peach" /> Research Publications
+            </h3>
+            {publications.map((p) => (
+              <blockquote key={p} className="font-serif text-2xl italic leading-snug text-zinc-200">
+                {p}
+              </blockquote>
+            ))}
+          </Reveal>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Contact() {
+  return (
+    <section id="contact" className="relative overflow-hidden px-4 py-28 md:py-40">
+      <div className="pointer-events-none absolute left-1/2 top-1/2 h-[36rem] w-[36rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-iris/15 blur-[140px]" />
+      <div className="relative mx-auto max-w-6xl text-center">
+        <Reveal>
+          <p className="eyebrow mb-6">
+            <span className="text-zinc-500">07 /</span> Contact
+          </p>
+          <h2 className="text-5xl font-semibold tracking-tight text-white md:text-7xl">
+            Let's <span className="font-serif font-normal italic text-gradient">connect.</span>
+          </h2>
+          <p className="mx-auto mt-6 max-w-xl text-lg text-zinc-400">
+            I'm always interested in discussing new opportunities, collaborations, and innovative projects.
+          </p>
+          <a
+            href={`mailto:${email}`}
+            className="group mt-12 inline-flex max-w-full items-center gap-3 font-serif text-2xl italic text-white transition hover:text-peach sm:text-5xl"
+          >
+            <span className="truncate">{email}</span>
+            <ArrowUpRight className="h-6 w-6 flex-shrink-0 transition group-hover:-translate-y-1 group-hover:translate-x-1 sm:h-8 sm:w-8" />
+          </a>
+        </Reveal>
+        <Reveal delay={0.15} className="mt-14 flex flex-wrap justify-center gap-3">
+          <a href={linkedin} target="_blank" rel="noopener noreferrer" className="chip flex items-center gap-2 px-5 py-2.5 text-sm transition hover:border-white/30 hover:text-white">
+            <Linkedin className="h-4 w-4" /> LinkedIn
+          </a>
+          <a href={github} target="_blank" rel="noopener noreferrer" className="chip flex items-center gap-2 px-5 py-2.5 text-sm transition hover:border-white/30 hover:text-white">
+            <Github className="h-4 w-4" /> GitHub
+          </a>
+          <span className="chip flex items-center gap-2 px-5 py-2.5 text-sm">
+            <MapPin className="h-4 w-4" /> Frisco, TX
+          </span>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+function ProjectModal({ project, onClose }: { project: Project; onClose: () => void }) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = '';
+    };
+  }, [onClose]);
+
+  return (
+    <motion.div
+      className="fixed inset-0 z-[70] flex items-center justify-center bg-black/70 p-4 backdrop-blur-md"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={onClose}
+    >
+      <motion.div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="project-title"
+        initial={{ opacity: 0, y: 40, scale: 0.97 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 40, scale: 0.97 }}
+        transition={{ duration: 0.45, ease }}
+        onClick={(e) => e.stopPropagation()}
+        className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-3xl border border-white/10 bg-ink-2"
+      >
+        <div className="relative">
+          <img src={project.image} alt={project.title} className="h-64 w-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-ink-2 to-transparent" />
+          <button
+            onClick={onClose}
+            autoFocus
+            aria-label="Close"
+            className="absolute right-4 top-4 grid h-10 w-10 place-items-center rounded-full bg-black/50 text-white backdrop-blur transition hover:bg-black/80"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+        <div className="p-8">
+          <span className="chip">{project.category}</span>
+          <h3 id="project-title" className="mt-4 text-3xl font-semibold text-white">{project.title}</h3>
+          <p className="mt-5 leading-relaxed text-zinc-400">{project.longDescription}</p>
+          <h4 className="eyebrow mb-3 mt-8">Technologies used</h4>
+          <div className="flex flex-wrap gap-2">
+            {project.technologies.map((t) => (
+              <span key={t} className="chip">{t}</span>
+            ))}
+          </div>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <a
+              href={project.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-iris to-peach px-6 py-3 font-semibold text-ink"
+            >
+              <Github className="h-4 w-4" /> View code
+            </a>
+            <button onClick={onClose} className="rounded-full border border-white/15 px-6 py-3 font-semibold text-white transition hover:bg-white/5">
+              Close
+            </button>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+function App() {
+  const [active, setActive] = useState('home');
+  const [selected, setSelected] = useState<Project | null>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach((e) => e.isIntersecting && setActive(e.target.id)),
+      { rootMargin: '-45% 0px -50% 0px' },
+    );
+    sections.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <MotionConfig reducedMotion="user">
+      <div className="grain relative min-h-screen overflow-x-clip">
+        <Nav active={active} />
+        <main>
+          <Hero />
+          <Marquee />
+          <About />
+          <ExperienceSection />
+          <Projects onSelect={setSelected} />
+          <Skills />
+          <Education />
+          <Awards />
+          <Contact />
+        </main>
+        <footer className="border-t border-white/[0.07] px-4 py-8">
+          <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 text-sm text-zinc-500 sm:flex-row">
+            <p>© {new Date().getFullYear()} Roshini Talluru. All Rights Reserved.</p>
+            <a href="#home" className="transition hover:text-white">Back to top ↑</a>
+          </div>
+        </footer>
+        <AnimatePresence>{selected && <ProjectModal project={selected} onClose={() => setSelected(null)} />}</AnimatePresence>
+      </div>
+    </MotionConfig>
+  );
+}
+
+export default App;
